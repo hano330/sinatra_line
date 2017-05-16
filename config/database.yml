@@ -1,0 +1,7 @@
+development: &default
+  adapter: mysql2
+  database: line_freee
+  host: localhost
+  username: root
+  password: 41933419
+  encoding: utf8

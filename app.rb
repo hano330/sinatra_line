@@ -1,0 +1,103 @@
+
+require "active_record"
+require "mysql2"
+require "sinatra"
+require "sinatra/content_for"
+
+# DB設定ファイルの読み込み
+ActiveRecord::Base.configurations = YAML.load_file("./config/database.yml")
+ActiveRecord::Base.establish_connection(:development)
+
+enable :sessions
+
+class User < ActiveRecord::Base
+
+  has_secure_password
+
+  #Validation
+  validates :name, presence: true
+  validates :password, presence: true
+
+end
+
+class Post < ActiveRecord::Base
+end
+
+before do
+  set_current_user
+end
+
+helpers do
+  def login?
+    session[:user_id].present?
+  end
+
+  def set_current_user
+    @current_user = User.find(session[:user_id]) if login?
+  end
+end
+
+#トップページまたはログイン後の画面へ
+get "/" do
+  if login?
+    #@title = "MINE|#{@current_user.name}"
+    erb :success
+  else
+    erb :index
+  end
+end
+
+#新規登録画面へ
+post "/signup" do
+  return redirect "/" if login?
+  @title = "MINE|新規登録"
+  erb :signup
+end
+
+#新規登録画面へ
+post "/register" do
+  return redirect '/' if login?
+
+  @id = params[:id]
+  @pw = params[:password]
+
+  #has_secure_passwordを利用するためuser.passwordにパスワードを入れる
+  user = User.create(name: @id, password: @pw)
+
+  #VaridationでIDとPWが入力されたかどうかをチェック
+  if user.valid?
+    @title = "MINE|ログイン"
+    erb :login
+  else
+    @title = "MINE|新規登録失敗"
+    erb :missignup
+  end
+end
+
+#ログイン画面
+get "/login" do
+  return redirect "/" if login?
+  @title = "MINE|ログイン"
+  erb :login
+end
+
+#ログイン
+post "/login" do
+  return redirect "/" if login?
+
+  user = User.find_by(name: params[:id])
+  #userが存在し、userのpasswordが一致するか
+  if user && user.authenticate(params[:password])
+    session[:user_id] = user.id
+    redirect "/"
+  else
+    @title = "MINE|ログイン"
+    erb :login
+  end
+
+end
+
+get "/logout" do
+  session.clear
+  redirect"/"
+end
