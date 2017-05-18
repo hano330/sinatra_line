@@ -9,9 +9,11 @@ require "rack-flash"
 ActiveRecord::Base.configurations = YAML.load_file("./config/database.yml")
 ActiveRecord::Base.establish_connection(:development)
 
+#セッション開始
 enable :sessions
 #これでFlash使えるはず・・？
 use Rack::Flash
+
 
 class User < ActiveRecord::Base
 
@@ -25,6 +27,7 @@ end
 
 class Post < ActiveRecord::Base
 end
+
 
 before do
   set_current_user
@@ -40,10 +43,10 @@ helpers do
   end
 end
 
+
 #トップページまたはログイン後の画面へ
 get "/" do
   if login?
-    #@title = "MINE|#{@current_user.name}"
     erb :success
   else
     erb :index
