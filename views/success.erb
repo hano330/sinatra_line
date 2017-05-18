@@ -1,6 +1,6 @@
 <% content_for :title do %>
 "MINE|<%= @current_user.name %>
 <% end %>
-
+<%= flash[:msg] %>
 <h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>
 <a href="/logout">ログアウト</a>
