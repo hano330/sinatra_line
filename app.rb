@@ -95,10 +95,10 @@ post "/login" do
   #userが存在し、userのpasswordが一致するか
   if user && user.authenticate(params[:password])
     session[:user_id] = user.id
-    flash[:msg] = "ログインに成功しました。"
+    flash[:notice] = "ログインに成功しました。"
     redirect "/"
   else
-    flash[:asklogin] = "ログインしてください。"
+    flash[:notice] = "ログインしてください。"
     @title = "MINE|ログイン"
     erb :login
   end
@@ -106,6 +106,6 @@ end
 
 get "/logout" do
   session.clear
-  flash[:logout] = "ログアウトしました。"
+  flash[:notice] = "ログアウトしました。"
   redirect"/"
 end
