@@ -98,13 +98,14 @@ post "/login" do
     flash[:msg] = "ログインに成功しました。"
     redirect "/"
   else
+    flash[:asklogin] = "ログインしてください。"
     @title = "MINE|ログイン"
     erb :login
   end
-
 end
 
 get "/logout" do
   session.clear
+  flash[:logout] = "ログアウトしました。"
   redirect"/"
 end
