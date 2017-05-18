@@ -3,12 +3,15 @@ require "active_record"
 require "mysql2"
 require "sinatra"
 require "sinatra/content_for"
+require "rack-flash"
 
 # DB設定ファイルの読み込み
 ActiveRecord::Base.configurations = YAML.load_file("./config/database.yml")
 ActiveRecord::Base.establish_connection(:development)
 
 enable :sessions
+#これでFlash使えるはず・・？
+use Rack::Flash
 
 class User < ActiveRecord::Base
 
@@ -89,6 +92,8 @@ post "/login" do
   #userが存在し、userのpasswordが一致するか
   if user && user.authenticate(params[:password])
     session[:user_id] = user.id
+    #フラッシュを使ってみる
+    flash.now[:msg] = "ログインに成功しました。"
     redirect "/"
   else
     @title = "MINE|ログイン"

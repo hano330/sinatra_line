@@ -22,6 +22,8 @@ GEM
     mustermann (1.0.0)
     mysql2 (0.4.6)
     rack (2.0.2)
+    rack-flash (0.1.2)
+      rack
     rack-protection (2.0.0)
       rack
     sinatra (2.0.0)
@@ -51,6 +53,7 @@ DEPENDENCIES
   activerecord
   bcrypt
   mysql2
+  rack-flash
   sinatra
   sinatra-activerecord
   sinatra-contrib
