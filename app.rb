@@ -11,7 +11,7 @@ ActiveRecord::Base.establish_connection(:development)
 
 #セッション開始
 enable :sessions
-#これでFlash使えるはず・・？
+#これでFlashが使える
 use Rack::Flash
 
 
@@ -95,17 +95,17 @@ post "/login" do
   #userが存在し、userのpasswordが一致するか
   if user && user.authenticate(params[:password])
     session[:user_id] = user.id
-    #フラッシュを使ってみる
-    flash.now[:msg] = "ログインに成功しました。"
+    flash[:notice] = "ログインに成功しました。"
     redirect "/"
   else
+    flash[:notice] = "ログインしてください。"
     @title = "MINE|ログイン"
     erb :login
   end
-
 end
 
 get "/logout" do
   session.clear
+  flash[:notice] = "ログアウトしました。"
   redirect"/"
 end
