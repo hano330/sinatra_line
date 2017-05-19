@@ -4,7 +4,10 @@
   <title><%= yield_content :title %></title>
 </head>
 <body>
-  <%= flash[:notice] %>
+  <% if flash[:notice] %>
+    <%= flash[:notice] %>
+  <% end %>
+
   <%= yield %>
 </body>
 </html>
