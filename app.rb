@@ -106,4 +106,6 @@ post "/logout" do
   redirect"/"
 end
 
+get "/masa" do
+  erb :talk if login?
 end
