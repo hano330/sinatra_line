@@ -73,6 +73,7 @@ post "/register" do
   if user.valid?
     erb :login
   else
+    flash[:notice] = "IDとPWを入力して登録ボタンを押してください。"
     erb :missignup
   end
 end
@@ -104,4 +105,5 @@ post "/logout" do
   flash[:notice] = "ログアウトしました。"
   redirect"/"
 end
+
 end
