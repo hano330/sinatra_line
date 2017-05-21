@@ -56,7 +56,6 @@ end
 #新規登録画面へ
 post "/signup" do
   return redirect "/" if login?
-  @title = "MINE|新規登録"
   erb :signup
 end
 
@@ -72,10 +71,8 @@ post "/register" do
 
   #VaridationでIDとPWが入力されたかどうかをチェック
   if user.valid?
-    @title = "MINE|ログイン"
     erb :login
   else
-    @title = "MINE|新規登録失敗"
     erb :missignup
   end
 end
@@ -83,7 +80,6 @@ end
 #ログイン画面
 get "/login" do
   return redirect "/" if login?
-  @title = "MINE|ログイン"
   erb :login
 end
 
@@ -99,7 +95,6 @@ post "/login" do
     redirect "/"
   else
     flash[:notice] = "ログインしてください。"
-    @title = "MINE|ログイン"
     erb :login
   end
 end
