@@ -1,0 +1,15 @@
+<% content_for :title do %>
+    <%= @current_user.name %>
+<% end %>
+<h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>
+
+<h2>トークをする相手を選んでください</h2>
+<ul>
+  <li><a href="/masa">まさ</a></li>
+  <li><a href="/juri">じゅりさん</li>
+  <li><a href="/sabo">さぼさん</li>
+</ul>
+
+<form action="/logout" method="post">
+  <button type="submit" class="btn">ログアウト</button>
+</form>
