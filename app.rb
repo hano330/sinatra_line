@@ -47,7 +47,7 @@ end
 #トップページまたはログイン後の画面へ
 get "/" do
   if login?
-    erb :success
+    erb :home
   else
     erb :index
   end
