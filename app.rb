@@ -99,8 +99,9 @@ post "/login" do
   end
 end
 
-get "/logout" do
+post "/logout" do
   session.clear
   flash[:notice] = "ログアウトしました。"
   redirect"/"
+end
 end
