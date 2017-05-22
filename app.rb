@@ -169,4 +169,12 @@ post "/request" do
   #jQueryによるポストではリダイレクトしないらしい・・・
   redirect "/"
 end
+
+post "/acceptreq" do
+  Friend.create(user_name: @current_user.name, frie_name: params[:name])
+  Friend.create(user_name: params[:name], frie_name: @current_user.name)
+  done_req = Fadd.where(req_from: params[:name], req_to: @current_user.name)
+  #destroyではだめでdestroy_allにしたら消えた。
+  done_req.destroy_all
+  redirect "/"
 end
