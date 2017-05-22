@@ -68,6 +68,22 @@ end
 #トップページまたはログイン後の画面へ
 get "/" do
   if login?
+    @friends = Friend.where(user_name: @current_user.name)
+    @users = User.order(id: :desc)
+    @reqs = Fadd.where(req_from: @current_user.name)
+    @reqds = Fadd.where(req_to: @current_user.name)
+    @i = 0
+    @x = 0
+=begin
+    #これだと@yet_req_nameがなんかハッシュうまく扱えないっぽい・・・
+    @users.each do |user|
+      fname = @friends.find_by(frie_name: user.name)
+      if fname
+        next
+      end
+      @yet_req_name = user
+    end
+=end
     erb :home
   else
     erb :login
