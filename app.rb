@@ -37,18 +37,26 @@ end
 
 before do
   set_current_user
+  set_to_user
 end
 
 helpers do
   def login?
     session[:user_name].present?
   end
+
+  def talk?
+    session[:to_name].present?
   end
 
   def set_current_user
     @current_user = User.find_by(name: session[:user_name]) if login?
   end
+
+  def set_to_user
+    @to_user = User.find_by(name: session[:to_name]) if talk?
   end
+
 end
 
 
