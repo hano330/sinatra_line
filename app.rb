@@ -163,4 +163,10 @@ end
 post "/delete" do
   Post.find(params[:id]).destroy
 end
+
+post "/request" do
+  Fadd.create(req_from: @current_user.name, req_to: params[:name])
+  #jQueryによるポストではリダイレクトしないらしい・・・
+  redirect "/"
+end
 end
