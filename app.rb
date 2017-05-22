@@ -4,6 +4,7 @@ require "mysql2"
 require "sinatra"
 require "sinatra/content_for"
 require "rack-flash"
+#require "sinatra/reloader"
 
 # DB設定ファイルの読み込み
 ActiveRecord::Base.configurations = YAML.load_file("./config/database.yml")
@@ -35,11 +36,13 @@ end
 
 helpers do
   def login?
-    session[:user_id].present?
+    session[:user_name].present?
+  end
   end
 
   def set_current_user
-    @current_user = User.find(session[:user_id]) if login?
+    @current_user = User.find_by(name: session[:user_name]) if login?
+  end
   end
 end
 
@@ -49,13 +52,12 @@ get "/" do
   if login?
     erb :home
   else
-    erb :index
+    erb :login
   end
 end
 
 #新規登録画面へ
-post "/signup" do
-  return redirect "/" if login?
+get "/signup" do
   erb :signup
 end
 
@@ -63,18 +65,15 @@ end
 post "/register" do
   return redirect '/' if login?
 
-  @id = params[:id]
-  @pw = params[:password]
-
   #has_secure_passwordを利用するためuser.passwordにパスワードを入れる
-  user = User.create(name: @id, password: @pw)
+  user = User.create(name: params[:name], password: params[:password])
 
   #VaridationでIDとPWが入力されたかどうかをチェック
   if user.valid?
     erb :login
   else
     flash[:notice] = "IDとPWを入力して登録ボタンを押してください。"
-    erb :missignup
+    erb :signup
   end
 end
 
@@ -88,10 +87,10 @@ end
 post "/login" do
   return redirect "/" if login?
 
-  user = User.find_by(name: params[:id])
+  user = User.find_by(name: params[:name])
   #userが存在し、userのpasswordが一致するか
   if user && user.authenticate(params[:password])
-    session[:user_id] = user.id
+    session[:user_name] = user.name
     flash[:notice] = "ログインに成功しました。"
     redirect "/"
   else
