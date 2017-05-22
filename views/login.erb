@@ -2,6 +2,9 @@
     MINE|ログイン
 <% end %>
 
+<% content_for :css do %>
+    /login.css
+<% end %>
   <form action="/login" method="post">
     <p>ID : <input type="text" name="id" size="20" maxlength="10"></p>
     <p>PW : <input type="password" name="password" size="20" maxlength="10"></p>

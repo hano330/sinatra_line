@@ -2,6 +2,7 @@
 <head>
   <meta charset="UTF-8">
   <title><%= yield_content :title %></title>
+  <link rel="stylesheet" type="text/css" href="<%= yield_content :css %>">
 </head>
 <body>
   <% if flash[:notice] %>

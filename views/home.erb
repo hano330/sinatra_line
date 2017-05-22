@@ -1,6 +1,9 @@
 <% content_for :title do %>
     <%= @current_user.name %>
 <% end %>
+<% content_for :css do %>
+    /home.css
+<% end %>
 <h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>
 
 <h2>トークをする相手を選んでください</h2>
