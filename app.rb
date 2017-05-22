@@ -41,6 +41,11 @@ before do
 end
 
 helpers do
+  #メッセージ送信の際にScriptを書いても無視するためのエスケープ処理
+  #書き方は「おまじない」的なものとして教えられた
+  include Rack::Utils
+  alias_method :h, :escape_html
+
   def login?
     session[:user_name].present?
   end
