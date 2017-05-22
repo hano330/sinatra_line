@@ -29,6 +29,11 @@ end
 class Post < ActiveRecord::Base
 end
 
+class Friend < ActiveRecord::Base
+end
+
+class Fadd < ActiveRecord::Base
+end
 
 before do
   set_current_user
