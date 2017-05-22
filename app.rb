@@ -86,7 +86,7 @@ get "/" do
 =end
     erb :home
   else
-    erb :login
+    erb :index
   end
 end
 
