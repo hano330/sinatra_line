@@ -7,7 +7,7 @@
 <% end %>
 
 <h1><%= @to_user.name %></h1>
-<div id="wrapper">
+<div id="wrapper" style="overflow: auto;">
   <% if @posts.present? %>
     <% @posts.each do |post| %>
           <% if post.name == @current_user.name %>
