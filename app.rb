@@ -140,6 +140,16 @@ post "/logout" do
   redirect"/"
 end
 
-get "/masa" do
+get "/hello/:name" do
+  @to_user = User.find_by(name: params[:name])
+  session[:to_user] = @to_user.name
+  #@posts = Post.where("(user_id = ?) or (to_id = ?)", @current_user.id, session[:to_id])
+
+  #相手による自分へのポストと自分からの相手へのポストを抽出し、日付順（id順になっているのかな）に並べる
+  @myposts = Post.where(name: @current_user.name, sent_to: session[:to_user])
+  @urposts = Post.where(name: session[:to_user], sent_to: @current_user.name)
+  @posts = @myposts + @urposts
+  @posts = @posts.sort
+  @urposts.update_all(kidoku: 1)
   erb :talk if login?
 end
