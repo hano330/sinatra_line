@@ -2,4 +2,22 @@
   MINE
 <% end %>
 
-<h1><a href="/login">MINE</a></h1>
+<% content_for :css do %>
+    /index.css
+<% end %>
+
+  <h1 class="button_wrap">
+    <p>ボタンをクリックしてください。</p>
+    <a class="button" href="/login">MINE</a>
+  </h1>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    $(".button").hover(
+        function() {
+        $(this).parent().find("p").text("MINEへようこそ！")
+    },
+        function() {
+        $(this).parent().find("p").text("ボタンをクリックしてください。")
+    });
+</script>

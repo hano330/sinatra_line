@@ -2,11 +2,16 @@
     MINE|ログイン
 <% end %>
 
+<% content_for :css do %>
+    /login.css
+<% end %>
+
+<div class="form_conf">
+  <h3>MINEはオープンソースのSMSアプリケーションです。</h3>
   <form action="/login" method="post">
-    <p>ID : <input type="text" name="id" size="20" maxlength="10"></p>
-    <p>PW : <input type="password" name="password" size="20" maxlength="10"></p>
-    <input type="submit" value="ログイン" >
+    <p>　名前　　: <input type="text" name="name" size="20" maxlength="10"></p>
+    <p>パスワード: <input type="password" name="password" size="20" maxlength="10"></p>
+    <input class="button" type="submit" style="font-size:20px;font-family:arial" value="ログイン" >
+    <a href="/signup"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="新規登録"></a>
   </form>
-  <form action="/signup" method="post">
-    <input type="submit" value="新規登録">
-  </form>
+</div>

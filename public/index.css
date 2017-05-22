@@ -1,0 +1,88 @@
+body {
+    background-color: #f0f8ff;
+}
+
+.button_wrap {
+    /*border: solid 1px;*/
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    bottom: 0px;
+    margin: auto;
+
+    text-align: center;
+    width: 300px;
+    height: 200px;
+}
+
+.button {
+    display: inline-block;
+    width: 200px;
+    height: 54px;
+    text-align: center;
+    text-decoration: none;
+    line-height: 54px;
+    outline: none;
+}
+.button::before,
+.button::after {
+    position: absolute;
+    z-index: -1;
+    display: block;
+    content: '';
+}
+.button,
+.button::before,
+.button::after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+}
+
+.button {
+    position: relative;
+    z-index: 2;
+    background-color: #333;
+    border: 2px solid #333;
+    color: #fff;
+    line-height: 50px;
+}
+.button:hover {
+    background-color: #fff;
+    border-color: #59b1eb;
+    color: #59b1eb;
+}
+.button::before,
+.button::after {
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background-color: #333;
+}
+.button::before {
+    right: 0;
+}
+.button::after {
+    left: 0;
+}
+.button:hover::before,
+.button:hover::after {
+    width: 0;
+    background-color: #59b1eb;
+}
+
+p {
+    font-weight: bold;
+    font-family: arial;
+    font-size: 15px;
+}
+
+#notice {
+    text-align: center;
+    font-weight: bold;
+    font-family: arial;
+    color: #00bfff;
+}
