@@ -153,3 +153,10 @@ get "/hello/:name" do
   @urposts.update_all(kidoku: 1)
   erb :talk if login?
 end
+
+post "/new" do
+  Post.create(name: @current_user.name, body: params[:body], sent_to: session[:to_user])
+  @to_user_name = session[:to_user]
+  redirect "/hello/#{@to_user_name}"
+end
+end
