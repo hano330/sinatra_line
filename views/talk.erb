@@ -1,5 +1,8 @@
-　<form action="register" method="post">
-  <input type="text" name="post" size="20" maxlength="10"> <button type="submit" class="btn">登録</button>
-  </form><% content_for :title do %>
+<% content_for :title do %>
     トーク|<%= @to_user.name %>
 <% end %>
+
+<% content_for :css do %>
+    /talk.css
+<% end %>
+
