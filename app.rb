@@ -159,4 +159,8 @@ post "/new" do
   @to_user_name = session[:to_user]
   redirect "/hello/#{@to_user_name}"
 end
+
+post "/delete" do
+  Post.find(params[:id]).destroy
+end
 end
