@@ -1,18 +1,147 @@
 <% content_for :title do %>
     <%= @current_user.name %>
 <% end %>
+
 <% content_for :css do %>
     /home.css
 <% end %>
-<h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>
 
-<h2>トークをする相手を選んでください</h2>
-<ul>
-  <li><a href="/masa">まさ</a></li>
-  <li><a href="/juri">じゅりさん</li>
-  <li><a href="/sabo">さぼさん</li>
-</ul>
+<div id="wrapper">
+
+<h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>
+<p id="instruction">友達の名前をクリックすると、メッセージが送れるよ！<br>リクエストを送信したり承認したらページを更新してね！</p>
+
+  <h3>友だち</h3>
+  <ul>
+    <% @friends.each do |friend| %>
+        <li>
+          <a href="/hello/<%= friend.frie_name %>"><%= friend.frie_name %></a>
+        </li>
+    <% end %>
+  </ul>
+
+  <h3>ユーザー</h3>
+  <ul>
+      <% @users.each do |user| %>
+          <% if @friends.present? && @reqs.present? %>
+              <% @friends.each do |friend| %>
+                  <% if user.name == friend.frie_name || user.name == @current_user.name %>
+                      <% break %>
+                  <% end %>
+                  <% @i += 1 %>
+                  <% if @i == @friends.size %>
+                    <% @reqs.each do |req| %>
+                        <% if user.name == req.req_to %>
+                            <% break %>
+                        <% end %>
+                        <% @x += 1 %>
+                        <% if @x == @reqs.size %>
+                          <li data-name="<%= user.name %>">
+                            <%= user.name %>
+                            <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+                          </li>
+                        <% end %>
+                    <% end %>
+                  <% end %>
+              <% end %>
+              <% @i = 0 %>
+          <% elsif @friends.present? %>
+              <% @friends.each do |friend| %>
+                  <% if user.name == friend.frie_name || user.name == @current_user.name %>
+                      <% break %>
+                  <% end %>
+                  <% @i += 1 %>
+                  <% if @i == @friends.size %>
+                    <li data-name="<%= user.name %>">
+                      <%= user.name %>
+                      <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+                    </li>
+                  <% end %>
+              <% end %>
+              <% @i = 0 %>
+          <% elsif @reqs.present? %>
+              <% @reqs.each do |req| %>
+                  <% if user.name == req.req_to || user.name == @current_user.name %>
+                      <% break %>
+                  <% end %>
+                  <% @i += 1 %>
+                  <% if @i == @reqs.size %>
+                    <li data-name="<%= user.name %>">
+                      <%= user.name %>
+                      <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+                    </li>
+                  <% end %>
+              <% end %>
+              <% @i = 0 %>
+          <% else %>
+              <% if user.name == @current_user.name %>
+                <% next %>
+              <% end %>
+              <li data-name="<%= user.name %>">
+                <%= user.name %>
+                <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+              </li>
+          <% end %>
+      <% end %>
+      <li><%= @current_user.name %></li>
+  </ul>
+
+  <h3>被リクエスト一覧</h3>
+  <ul>
+    <% if @reqds.present? %>
+      <% @reqds.each do |reqd| %>
+          <li data-name="<%= reqd.req_from %>">
+            <%= reqd.req_from %>
+            <span class="acceptreqCmd" style="cursor:pointer;color:blue">[OK]</span>
+          </li>
+      <% end %>
+    <% else %>
+      <p>リクエストはありません</p>
+    <% end %>
+  </ul>
+
+  <h3>リクエスト中</h3>
+  <ul>
+    <% if @reqs.present? %>
+      <% @reqs.each do |req| %>
+          <li data-name="<%= req.req_to %>">
+            <%= req.req_to %>
+          </li>
+      <% end %>
+    <% else %>
+      <p>リクエスト中の人はいません</p>
+    <% end %>
+  </ul>
+</div>
 
 <form action="/logout" method="post">
-  <button type="submit" class="btn">ログアウト</button>
+  <button class="button" type="submit" style="font-size:15px;font-family:arial">ログアウト</button>
 </form>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    $(".requestCmd").click(function() {
+        var el = $(this).parent();
+        if (confirm("友達リクエストを送信しますか？")){
+            /* 正直ここの意味を深く理解しているわけではない */
+            $.post("/request", {
+                name: el.data("name")
+            }, function () {
+                el.fadeOut(800);
+            });
+        }
+    }),
+
+    $(".acceptreqCmd").click(function() {
+        var el = $(this).parent();
+        if (confirm("リクエストを許可しますか？")){
+          /* 正直ここの意味を深く理解しているわけではない */
+            $.post("/acceptreq", {
+                name: el.data("name")
+            }, function () {
+                el.fadeOut(800);
+            });
+        }
+    })
+</script>
