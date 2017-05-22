@@ -104,6 +104,7 @@ post "/register" do
 
   #VaridationでIDとPWが入力されたかどうかをチェック
   if user.valid?
+    flash[:notice] = "ユーザー登録が完了しました。ログインしてください。"
     erb :login
   else
     flash[:notice] = "IDとPWを入力して登録ボタンを押してください。"
