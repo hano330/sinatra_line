@@ -23,8 +23,10 @@ end
 class MineApp < Sinatra::Base
   configure do
     # DB設定ファイルの読み込み
-    ActiveRecord::Base.configurations = YAML.load_file("db/database.yml")
-    ActiveRecord::Base.establish_connection(:development)
+    #db/database.ymlにしないならどうやって読み込むかわからなくなった・・・
+    #ActiveRecord::Base.configurations = YAML.load_file("db/database.yml")
+    ActiveRecord::Base.establish_connection(ENV["postgresql-flexible-24081"] || "postgres://mwvfdbywwseysv:3a1e0ca5ba219e2bf4e8aa6d1290fb01c71f565f335fcbf8701524eb676ae5e3@ec2-184-73-236-170.compute-1.amazonaws.com:5432/d3suersi6s7tmn")
+
   end
 
   set :public_folder, File.dirname(__FILE__) + '/public'
