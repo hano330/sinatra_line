@@ -4,6 +4,6 @@ Bundler.require
 
 require_relative "./app"
 
-use ActiveRecord::ConnectionAdapters
+use ActiveRecord::ConnectionAdapters::PostgreSQL
 
 run MineApp
