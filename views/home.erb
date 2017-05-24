@@ -55,12 +55,14 @@ function ChangeTab(tabname) {
                           <% end %>
                           <% @x += 1 %>
                           <% if @x == @reqs.size %>
+                          <div id="list">
                             <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
                             <p data-name="<%= user.name %>">
                               <%= user.name %>
                               <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
                             </p>
                             <hr>
+                          </div>
                           <% end %>
                       <% end %>
                     <% end %>
@@ -73,12 +75,14 @@ function ChangeTab(tabname) {
                     <% end %>
                     <% @i += 1 %>
                     <% if @i == @friends.size %>
+                    <div id="list">
                       <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
                       <p data-name="<%= user.name %>">
                         <%= user.name %>
                         <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
                       </p>
                       <hr>
+                    </div>
                     <% end %>
                 <% end %>
                 <% @i = 0 %>
@@ -89,12 +93,14 @@ function ChangeTab(tabname) {
                     <% end %>
                     <% @i += 1 %>
                     <% if @i == @reqs.size %>
+                    <div id="list">
                       <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
                       <p data-name="<%= user.name %>">
                         <%= user.name %>
                         <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
                       </p>
                       <hr>
+                    </div>
                     <% end %>
                 <% end %>
                 <% @i = 0 %>
@@ -102,12 +108,14 @@ function ChangeTab(tabname) {
                 <% if user.name == @current_user.name %>
                   <% next %>
                 <% end %>
-                <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
-                <p data-name="<%= user.name %>">
-                  <%= user.name %>
-                  <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-                </p>
-                <hr>
+                <div id="list">
+                  <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+                  <p data-name="<%= user.name %>">
+                    <%= user.name %>
+                    <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+                  </p>
+                  <hr>
+                </div>
             <% end %>
         <% end %>
       　<img id="me" width="50px" height="50px" src="./images/<%= @current_user.profile_url %>">
@@ -120,13 +128,15 @@ function ChangeTab(tabname) {
     <div id="tab3" class="tab">
       <% if @reqds.present? %>
         <% @reqds.each do |reqd| %>
-              <% user = User.find_by(name: reqd.req_from) %>
-              <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
-              <p data-name="<%= reqd.req_from %>">
+          <% user = User.find_by(name: reqd.req_from) %>
+          <div id="list2">
+            <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+            <p data-name="<%= reqd.req_from %>">
               <%= reqd.req_from %>
               <span class="acceptreqCmd" style="cursor:pointer;color:blue">[OK]</span>
             </p>
             <hr>
+          </div>
         <% end %>
       <% else %>
         <p style="font-size:20px; text-align:center;">リクエストはありません</p>
@@ -136,7 +146,7 @@ function ChangeTab(tabname) {
     <div id="tab4" class="tab">
       <% if @reqs.present? %>
         <% @reqs.each do |req| %>
-            <% user = User.find_by(name: req.req_to) %>
+           <% user = User.find_by(name: req.req_to) %>
             <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
             <p data-name="<%= req.req_to %>">
               <%= req.req_to %>
@@ -162,25 +172,33 @@ ChangeTab('tab1');
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
     $(".requestCmd").click(function() {
-        var el = $(this).parent();
+        var el1 = $(this).parent();
+        var el2 = $(this).parents("#list").find("img");
+        var el3 = $(this).parents("#list").find("hr");
         if (confirm("友達リクエストを送信しますか？")){
             /* 正直ここの意味を深く理解しているわけではない */
             $.post("/request", {
-                name: el.data("name")
+                name: el1.data("name")
             }, function () {
-                el.fadeOut(800);
+                el3.fadeOut(500);
+                el2.fadeOut(500);
+                el1.fadeOut(500);
             });
         }
     }),
 
     $(".acceptreqCmd").click(function() {
-        var el = $(this).parent();
+        var el1 = $(this).parent();
+        var el2 = $(this).parents("#list2").find("img");
+        var el3 = $(this).parents("#list2").find("hr");
         if (confirm("リクエストを許可しますか？")){
           /* 正直ここの意味を深く理解しているわけではない */
             $.post("/acceptreq", {
-                name: el.data("name")
+                name: el1.data("name")
             }, function () {
-                el.fadeOut(800);
+                el3.fadeOut(500);
+                el2.fadeOut(500);
+                el1.fadeOut(500);
             });
         }
     });

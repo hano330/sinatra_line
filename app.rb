@@ -3,6 +3,23 @@ Bundler.require
 
 require "rack-flash"
 
+class User < ActiveRecord::Base
+  has_secure_password
+
+  #Validation
+  validates :name, presence: true
+end
+
+class Post < ActiveRecord::Base
+end
+
+class Friend < ActiveRecord::Base
+end
+
+class Fadd < ActiveRecord::Base
+end
+
+
 class MineApp < Sinatra::Base
   configure do
     # DB設定ファイルの読み込み
@@ -178,20 +195,3 @@ class MineApp < Sinatra::Base
     erb :mypage
   end
 end
-
-class User < ActiveRecord::Base
-  has_secure_password
-
-  #Validation
-  validates :name, presence: true
-end
-
-class Post < ActiveRecord::Base
-end
-
-class Friend < ActiveRecord::Base
-end
-
-class Fadd < ActiveRecord::Base
-end
-
