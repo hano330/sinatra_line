@@ -8,6 +8,8 @@ class CreateMigration < ActiveRecord::Migration[5.1]
       p.string :name
       p.text :body
       p.timestamps
+      p.string :sent_to
+      p.integer :kidoku
     end
 
     create_table :users do |user|
