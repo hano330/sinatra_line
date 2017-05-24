@@ -165,7 +165,17 @@ class MineApp < Sinatra::Base
     File.open(save_path, 'wb') do |f|
       f.write params[:file][:tempfile].read
     end
-    @current_user.update(profile_url: file_path)
+    if @current_user.update(profile_url: file_path)
+      flash[:notice] = "プロフィール写真の変更に成功しました。"
+      redirect "/mypage"
+    else
+      flash[:notice] = "プロフィール写真の変更に失敗しました。"
+      redirect "/mypage"
+    end
+  end
+
+  get "/mypage" do
+    erb :mypage
   end
 end
 

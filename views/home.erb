@@ -111,9 +111,9 @@ function ChangeTab(tabname) {
             <% end %>
         <% end %>
       　<img id="me" width="50px" height="50px" src="./images/<%= @current_user.profile_url %>">
-        <p>
+        <a href="/mypage">
          <%= @current_user.name %>
-        </p>
+        </a>
         <hr>
     </div>
 
@@ -129,7 +129,7 @@ function ChangeTab(tabname) {
             <hr>
         <% end %>
       <% else %>
-        <p>リクエストはありません</p>
+        <p style="font-size:20px; text-align:center;">リクエストはありません</p>
       <% end %>
     </div>
 
@@ -144,7 +144,7 @@ function ChangeTab(tabname) {
             <hr>
         <% end %>
       <% else %>
-        <p>リクエスト中の人はいません</p>
+        <p style="font-size:20px; text-align:center;">リクエスト中の人はいません</p>
       <% end %>
     </div>
 </div>
