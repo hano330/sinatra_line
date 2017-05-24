@@ -6,113 +6,153 @@
     /home.css
 <% end %>
 
-<div id="wrapper">
+<script type="text/javascript"><!--
+function ChangeTab(tabname) {
+    // 全部消す
+    document.getElementById('tab1').style.display = 'none';
+    document.getElementById('tab2').style.display = 'none';
+    document.getElementById('tab3').style.display = 'none';
+    document.getElementById('tab4').style.display = 'none';
+    // 指定箇所のみ表示
+    document.getElementById(tabname).style.display = 'block';
+}
+// --></script>
 
-<h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>
-<p id="instruction">友達の名前をクリックすると、メッセージが送れるよ！<br>リクエストを送信したり承認したらページを更新してね！</p>
+<div class="tabbox">
 
-  <h3>友だち</h3>
-  <ul>
+  <h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>
+  <p id="instruction">友達の名前をクリックすると、メッセージが送れるよ！<br>リクエストを送信したり承認したらページを更新してね！</p>
+
+  <p class="tabs">
+    <a href="#tab1" class="tab1" onclick="ChangeTab('tab1');return false;">友だち</a>
+    <a href="#tab2" class="tab2" onclick="ChangeTab('tab2');return false;">ユーザー</a>
+    <a href="#tab3" class="tab3" onclick="ChangeTab('tab3');return false;">リクエスト受信</a>
+    <a href="#tab4" class="tab4" onclick="ChangeTab('tab4');return false;">リクエスト中</a>
+  </p>
+
+
+  <div id="tab1" class="tab">
     <% @friends.each do |friend| %>
-        <li>
-          <a href="/hello/<%= friend.frie_name %>"><%= friend.frie_name %></a>
-        </li>
+        <% user = User.find_by(name: friend.frie_name) %>
+          <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+        <a href="/hello/<%= friend.frie_name %>"><%= friend.frie_name %></a>
+        <hr>
     <% end %>
-  </ul>
+  </div>
 
-  <h3>ユーザー</h3>
-  <ul>
-      <% @users.each do |user| %>
-          <% if @friends.present? && @reqs.present? %>
-              <% @friends.each do |friend| %>
-                  <% if user.name == friend.frie_name || user.name == @current_user.name %>
-                      <% break %>
-                  <% end %>
-                  <% @i += 1 %>
-                  <% if @i == @friends.size %>
-                    <% @reqs.each do |req| %>
-                        <% if user.name == req.req_to %>
-                            <% break %>
-                        <% end %>
-                        <% @x += 1 %>
-                        <% if @x == @reqs.size %>
-                          <li data-name="<%= user.name %>">
-                            <%= user.name %>
-                            <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-                          </li>
-                        <% end %>
+    <div id="tab2" class="tab">
+        <% @users.each do |user| %>
+            <% if @friends.present? && @reqs.present? %>
+                <% @friends.each do |friend| %>
+                    <% if user.name == friend.frie_name || user.name == @current_user.name %>
+                        <% break %>
                     <% end %>
-                  <% end %>
-              <% end %>
-              <% @i = 0 %>
-          <% elsif @friends.present? %>
-              <% @friends.each do |friend| %>
-                  <% if user.name == friend.frie_name || user.name == @current_user.name %>
-                      <% break %>
-                  <% end %>
-                  <% @i += 1 %>
-                  <% if @i == @friends.size %>
-                    <li data-name="<%= user.name %>">
-                      <%= user.name %>
-                      <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-                    </li>
-                  <% end %>
-              <% end %>
-              <% @i = 0 %>
-          <% elsif @reqs.present? %>
-              <% @reqs.each do |req| %>
-                  <% if user.name == req.req_to || user.name == @current_user.name %>
-                      <% break %>
-                  <% end %>
-                  <% @i += 1 %>
-                  <% if @i == @reqs.size %>
-                    <li data-name="<%= user.name %>">
-                      <%= user.name %>
-                      <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-                    </li>
-                  <% end %>
-              <% end %>
-              <% @i = 0 %>
-          <% else %>
-              <% if user.name == @current_user.name %>
-                <% next %>
-              <% end %>
-              <li data-name="<%= user.name %>">
-                <%= user.name %>
-                <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-              </li>
-          <% end %>
-      <% end %>
-      <li><%= @current_user.name %></li>
-  </ul>
+                    <% @i += 1 %>
+                    <% if @i == @friends.size %>
+                      <% @reqs.each do |req| %>
+                          <% if user.name == req.req_to %>
+                              <% break %>
+                          <% end %>
+                          <% @x += 1 %>
+                          <% if @x == @reqs.size %>
+                            <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+                            <p data-name="<%= user.name %>">
+                              <%= user.name %>
+                              <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+                            </p>
+                            <hr>
+                          <% end %>
+                      <% end %>
+                    <% end %>
+                <% end %>
+                <% @i = 0 %>
+            <% elsif @friends.present? %>
+                <% @friends.each do |friend| %>
+                    <% if user.name == friend.frie_name || user.name == @current_user.name %>
+                        <% break %>
+                    <% end %>
+                    <% @i += 1 %>
+                    <% if @i == @friends.size %>
+                      <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+                      <p data-name="<%= user.name %>">
+                        <%= user.name %>
+                        <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+                      </p>
+                      <hr>
+                    <% end %>
+                <% end %>
+                <% @i = 0 %>
+            <% elsif @reqs.present? %>
+                <% @reqs.each do |req| %>
+                    <% if user.name == req.req_to || user.name == @current_user.name %>
+                        <% break %>
+                    <% end %>
+                    <% @i += 1 %>
+                    <% if @i == @reqs.size %>
+                      <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+                      <p data-name="<%= user.name %>">
+                        <%= user.name %>
+                        <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+                      </p>
+                      <hr>
+                    <% end %>
+                <% end %>
+                <% @i = 0 %>
+            <% else %>
+                <% if user.name == @current_user.name %>
+                  <% next %>
+                <% end %>
+                <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+                <p data-name="<%= user.name %>">
+                  <%= user.name %>
+                  <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+                </p>
+                <hr>
+            <% end %>
+        <% end %>
+      　<img id="me" width="50px" height="50px" src="./images/<%= @current_user.profile_url %>">
+        <p>
+         <%= @current_user.name %>
+        </p>
+        <hr>
+    </div>
 
-  <h3>被リクエスト一覧</h3>
-  <ul>
-    <% if @reqds.present? %>
-      <% @reqds.each do |reqd| %>
-          <li data-name="<%= reqd.req_from %>">
-            <%= reqd.req_from %>
-            <span class="acceptreqCmd" style="cursor:pointer;color:blue">[OK]</span>
-          </li>
+    <div id="tab3" class="tab">
+      <% if @reqds.present? %>
+        <% @reqds.each do |reqd| %>
+              <% user = User.find_by(name: reqd.req_from) %>
+              <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+              <p data-name="<%= reqd.req_from %>">
+              <%= reqd.req_from %>
+              <span class="acceptreqCmd" style="cursor:pointer;color:blue">[OK]</span>
+            </p>
+            <hr>
+        <% end %>
+      <% else %>
+        <p>リクエストはありません</p>
       <% end %>
-    <% else %>
-      <p>リクエストはありません</p>
-    <% end %>
-  </ul>
+    </div>
 
-  <h3>リクエスト中</h3>
-  <ul>
-    <% if @reqs.present? %>
-      <% @reqs.each do |req| %>
-          <li data-name="<%= req.req_to %>">
-            <%= req.req_to %>
-          </li>
+    <div id="tab4" class="tab">
+      <% if @reqs.present? %>
+        <% @reqs.each do |req| %>
+            <% user = User.find_by(name: req.req_to) %>
+            <img width="50px" height="50px" src="./images/<%= user.profile_url %>">
+            <p data-name="<%= req.req_to %>">
+              <%= req.req_to %>
+            </p>
+            <hr>
+        <% end %>
+      <% else %>
+        <p>リクエスト中の人はいません</p>
       <% end %>
-    <% else %>
-      <p>リクエスト中の人はいません</p>
-    <% end %>
-  </ul>
+    </div>
 </div>
+
+<script type="text/javascript"><!--
+// デフォルトのタブを選択
+ChangeTab('tab1');
+// --></script>
 
 <form action="/logout" method="post">
   <button class="button" type="submit" style="font-size:15px;font-family:arial">ログアウト</button>
@@ -143,5 +183,5 @@
                 el.fadeOut(800);
             });
         }
-    })
+    });
 </script>

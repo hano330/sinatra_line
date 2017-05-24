@@ -50,10 +50,48 @@ p {
     color: black;
 }
 
-li {
+#tab1 a {
+    display: inline;
+    width: 800px;
     font-weight: bold;
+    font-size: 30px;
     font-family: arial;
     color: black;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+#tab2 p {
+    display: inline;
+    font-size: 30px;
+    font-family: arial;
+    color: black;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+#tab3 p {
+    display: inline;
+    width: 800px;
+    font-size: 30px;
+    font-family: arial;
+    color: black;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+#tab4 p {
+    display: inline;
+    width: 800px;
+    font-size: 30px;
+    font-family: arial;
+    color: black;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 
 h3 {
@@ -81,9 +119,106 @@ form {
     margin-top: 10px;
 }
 
-div#wrapper {
-    width: 800px;
+/* タブについての基本的なCSS */
+
+/* ▼(A)表示領域全体 */
+div.tabbox {
     margin: 0 auto;
+    padding: 0px;
+    width: 500px;
     text-align: left;
-    border: inset 5px #00bfff;
+}
+
+/* ▼(B)タブ部分 */
+p.tabs { margin: 0px; padding: 0px; }
+p.tabs a {
+    /* ▼(B-2)リンクをタブのように見せる */
+    display: block; width: 115px; float: left;
+    margin: 0px 1px 0px 0px; padding: 3px;
+    text-align: center;
+    font-size: 15px;
+    border-radius: 12px 12px 0px 0px; /* 角を丸くする */
+    text-decoration: none;
+}
+/* ▼(B-3)各タブの配色 */
+/*
+p.tabs a.tab1 { background-color: blue;  color: white; }
+p.tabs a.tab2 { background-color: #aaaa00; color:white;}
+p.tabs a.tab3 { background-color: red;   color: white; }
+p.tabs a.tab4 { background-color: #008000;   color: white; }
+p.tabs a.tab1:hover { color: skyblue; }
+p.tabs a.tab2:hover { color: yellow; }
+p.tabs a.tab3:hover { color: #ffbc7a; }
+p.tabs a.tab4:hover { color: #dcdcdc; }
+*/
+p.tabs a.tab1 { background-color: blue;  color: white; }
+p.tabs a.tab2 { background-color: blue;  color: white; }
+p.tabs a.tab3 { background-color: blue;  color: white; }
+p.tabs a.tab4 { background-color: blue;  color: white; }
+
+/* ▼(C)タブ中身のボックス */
+div.tab {
+    /* ▼(C-2)ボックス共通の装飾 */
+    width: 477px; height: 500px; overflow: auto; clear: left;
+}
+/* ▼(C-3)各ボックスの配色 */
+/*
+div#tab1 { border: solid blue; background-color: #ccffff; border-width: 7px 5px 5px 5px;}
+div#tab2 { border: solid #aaaa00; background-color: #ffffcc; border-width: 7px 5px 5px 5px;}
+div#tab3 { border: solid red; background-color: #ffcccc; border-width: 7px 5px 5px 5px;}
+div#tab4 { border: solid #008000; background-color: #90ee90; border-width: 7px 5px 5px 5px;}
+div.tab p { margin: 0.5em; }
+*/
+div#tab1 { border: solid blue; background-color: #ccffff; border-width: 7px 5px 5px 5px;}
+div#tab2 { border: solid blue; background-color: #ccffff; border-width: 7px 5px 5px 5px;}
+div#tab3 { border: solid blue; background-color: #ccffff; border-width: 7px 5px 5px 5px;}
+div#tab4 { border: solid blue; background-color: #ccffff; border-width: 7px 5px 5px 5px;}
+div.tab p { margin: 0.5em; }
+
+#tab1 a {
+    text-decoration: none;
+    color: black;
+}
+
+#tab1 a:hover {
+    color: blue;
+}
+
+#tab1 a:active {
+    color: red;
+}
+
+#tab1 img {
+    display: inline;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: -10px;
+}
+
+#tab2 img {
+    display: inline;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: -10px;
+}
+
+#tab2 #me {
+    display: inline;
+    margin-top: 10px;
+    margin-left: -5px;
+    margin-bottom: -10px;
+}
+
+#tab3 img {
+    display: inline;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: -10px;
+}
+
+#tab4 img {
+    display: inline;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: -10px;
 }
