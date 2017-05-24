@@ -19,6 +19,9 @@ end
 class Fadd < ActiveRecord::Base
 end
 
+class Photo < ActiveRecord::Base
+end
+
 
 class MineApp < Sinatra::Base
   configure do
@@ -177,9 +180,11 @@ class MineApp < Sinatra::Base
            elsif params[:file][:type] == "image/gif"
              "gif"
            end
-    file_path = "#{@current_user.id}.#{type}"
-    save_path = "./public/images/#{file_path}"
-    File.open(save_path, 'wb') do |f|
+    file_address = "#{@current_user.id}.#{type}"
+    photo = Photo.create(file_belongs: file_address)
+    #Heroku上ではデータベースに保存する
+    #save_path = "./public/images/#{file_path}"
+    File.open(photo.file, 'w') do |f|
       f.write params[:file][:tempfile].read
     end
     if @current_user.update(profile_url: file_path)

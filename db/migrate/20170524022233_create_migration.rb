@@ -27,6 +27,12 @@ class CreateMigration < ActiveRecord::Migration[5.1]
       fadd.string :req_from
       fadd.string :req_to
     end
+
+    create_table :photos  do |p|
+      p.string :file
+      p.string :file_belongs
+    end
+
   end
 end
 
