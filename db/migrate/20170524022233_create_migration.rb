@@ -4,6 +4,27 @@ ActiveRecord::Base.establish_connection(ENV["postgresql-flexible-24081"] || "pos
 
 class CreateMigration < ActiveRecord::Migration[5.1]
   def change
+    create_table :posts do |p|
+      p.string :name
+      p.text :body
+      p.timestamps
+    end
+
+    create_table :users do |user|
+      user.string :name
+      user.string :password_digest
+      user.string :profile_url
+    end
+
+    create_table :friends do |friend|
+      friend.string :user_name
+      friend.string :frie_name
+    end
+
+    create_table :fadds do |fadd|
+      fadd.string :req_from
+      fadd.string :req_to
+    end
   end
 end
 
