@@ -166,9 +166,9 @@ class MineApp < Sinatra::Base
 
     #File.openとFile.writeをつかって原始的にやってみる
     photo = Photo.create(file_belongs: file_address)
-    original = File.open(params[:file][:tempfile], "r+b")
+    original = File.open(params[:file][:tempfile], "rb")
     #Photoテーブルの一つのレコードのファイルカラムに書き込む
-    copy = File.open(photo.file, "w+b")
+    copy = File.open(photo.file, "wb")
     copy.write(original.read)
     original.close
     copy.close
