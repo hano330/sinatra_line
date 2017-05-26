@@ -12,7 +12,7 @@ class MineApp < Sinatra::Base
   end
 
   #ローカルで動かす際にはこれが必要になったけど、Herokuで動かす際には要らない？
-  #set :public_folder, File.dirname(__FILE__) + '/public'
+  set :public_folder, File.dirname(__FILE__) + "/public"
 
   #セッション開始
   enable :sessions
@@ -164,12 +164,19 @@ class MineApp < Sinatra::Base
 
     file_address = "#{@current_user.id}.#{type}"
 
-    #File.openとFile.writeをつかって原始的にやってみる
-    photo = Photo.create(file_belongs: file_address)
-    File.open("test", "wb") do |f|
+    save_path = "./public/images/#{file_address}"
+
+    File.open(save_path, "wb") do |f|
       f.write params[:file][:tempfile].read
     end
-    photo.file = test
+
+    # #File.openとFile.writeをつかって原始的にやってみる
+    # photo = Photo.create(file_belongs: file_address)
+    # File.open("test", "wb") do |f|
+    #   f.write params[:file][:tempfile].read
+    # end
+    # photo.file = test
+
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
       redirect "/mypage"
@@ -180,7 +187,6 @@ class MineApp < Sinatra::Base
   end
 
   get "/mypage" do
-    @photo = Photo.find_by(file_belongs: @current_user.profile_url)
     erb :mypage
   end
 end
