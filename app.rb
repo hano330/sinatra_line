@@ -162,13 +162,13 @@ class MineApp < Sinatra::Base
              "gif"
            end
     file_address = "#{@current_user.id}.#{type}"
-    photo = Photo.create(file_belongs: file_address)
+    photo = Photo.create(file_belongs: file_address, file: params[:file])
     #Heroku上ではデータベースに保存する
     #save_path = "./public/images/#{file_path}"
-    File.open(photo.file, 'w') do |f|
-      f.write params[:file][:tempfile].read
-    end
-    if @current_user.update(profile_url: file_path)
+    # File.open(photo.file, 'w') do |f|
+    #   f.write params[:file][:tempfile].read
+    # end
+    if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
       redirect "/mypage"
     else
