@@ -162,7 +162,10 @@ class MineApp < Sinatra::Base
              "gif"
            end
     file_address = "#{@current_user.id}.#{type}"
-    photo = Photo.create(file_belongs: file_address, file: params[:file][:tempfile])
+    photo = Photo.create(file_belongs: file_address)
+    File.open(photo.file, "w") do |p|
+      p.write params[:file][:tempfile].read
+    end
     #Heroku上ではデータベースに保存する
     #save_path = "./public/images/#{file_path}"
     # File.open(photo.file, 'w') do |f|
