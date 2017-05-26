@@ -166,12 +166,9 @@ class MineApp < Sinatra::Base
 
     #File.openとFile.writeをつかって原始的にやってみる
     photo = Photo.create(file_belongs: file_address)
-    original = File.open(params[:file][:tempfile], "rb")
-    #Photoテーブルの一つのレコードのファイルカラムに書き込む
-    copy = File.open(photo.file, "wb")
-    copy.write(original.read)
-    original.close
-    copy.close
+    File.open(photo.file, "wb") do |f|
+      f.write params[:file][:tempfile].read
+    end
 
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
