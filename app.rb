@@ -161,16 +161,18 @@ class MineApp < Sinatra::Base
            elsif params[:file][:type] == "image/gif"
              "gif"
            end
+
     file_address = "#{@current_user.id}.#{type}"
+
+    #File.openとFile.writeをつかって原始的にやってみる
     photo = Photo.create(file_belongs: file_address)
-    File.open(photo.file, "w") do |p|
-      p.write params[:file][:tempfile].read
-    end
-    #Heroku上ではデータベースに保存する
-    #save_path = "./public/images/#{file_path}"
-    # File.open(photo.file, 'w') do |f|
-    #   f.write params[:file][:tempfile].read
-    # end
+    original = File.open(params[:file][:tempfile], "r+b")
+    #Photoテーブルの一つのレコードのファイルカラムに書き込む
+    copy = File.open(photo.file, "w+b")
+    copy.write(original.read)
+    original.close
+    copy.close
+
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
       redirect "/mypage"
