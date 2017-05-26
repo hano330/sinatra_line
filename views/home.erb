@@ -30,7 +30,6 @@ function ChangeTab(tabname) {
     <a href="#tab4" class="tab4" onclick="ChangeTab('tab4');return false;">リクエスト中</a>
   </p>
 
-
   <div id="tab1" class="tab">
     <% @friends.each do |friend| %>
         <% user = User.find_by(name: friend.frie_name) %>
