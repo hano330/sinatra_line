@@ -11,7 +11,7 @@ class MineApp < Sinatra::Base
     ActiveRecord::Base.establish_connection(ENV["postgresql-flexible-24081"] || "postgres://mwvfdbywwseysv:3a1e0ca5ba219e2bf4e8aa6d1290fb01c71f565f335fcbf8701524eb676ae5e3@ec2-184-73-236-170.compute-1.amazonaws.com:5432/d3suersi6s7tmn")
   end
 
-  #ローカルで動かす際にはこれが必要になったけど、Herokuで動かす際には要らない
+  #ローカルで動かす際にはこれが必要になったけど、Herokuで動かす際には要らない？
   #set :public_folder, File.dirname(__FILE__) + '/public'
 
   #セッション開始
@@ -166,10 +166,10 @@ class MineApp < Sinatra::Base
 
     #File.openとFile.writeをつかって原始的にやってみる
     photo = Photo.create(file_belongs: file_address)
-    File.open(photo.file, "wb") do |f|
+    File.open("test", "wb") do |f|
       f.write params[:file][:tempfile].read
     end
-
+    photo.file = test
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
       redirect "/mypage"
