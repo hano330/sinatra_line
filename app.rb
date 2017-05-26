@@ -168,7 +168,6 @@ class MineApp < Sinatra::Base
     # File.open(photo.file, 'w') do |f|
     #   f.write params[:file][:tempfile].read
     # end
-    binding.pry
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
       redirect "/mypage"
