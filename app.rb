@@ -178,6 +178,7 @@ class MineApp < Sinatra::Base
   end
 
   get "/mypage" do
+    @profile_image = Photo.find_by(file_belongs: @current_user.profile_url)
     erb :mypage
   end
 end
