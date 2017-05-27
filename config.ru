@@ -1,9 +1,7 @@
 require "rubygems"
 require "bundler"
-Bundler.require
+Bundler.require(:default, :development)
 
 require_relative "./app"
-
-#use ActiveRecord::ConnectionAdapters
 
 run MineApp
