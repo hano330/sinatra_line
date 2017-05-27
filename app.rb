@@ -166,15 +166,11 @@ class MineApp < Sinatra::Base
 
     file_address = "#{@current_user.id}.#{type}"
 
-    # save_path = "./images/#{file_address}"
+    save_path = "./public/images/#{file_address}"
 
-    photo = Photo.create(file_belongs: file_address)
-    photo_file = photo.file
-
-    File.open(photo_file, "wb") do |f|
+    File.open(save_path, "wb") do |f|
       f.write params[:file][:tempfile].read
     end
-
 
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
