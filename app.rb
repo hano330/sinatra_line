@@ -164,14 +164,12 @@ class MineApp < Sinatra::Base
 
     file_address = "#{@current_user.id}.#{type}"
 
-    photo = Photo.create(file_belongs: file_address, file: params[:file][:tempfile].read)
-    binding.pry
     #下記のコードはローカルで実行するなら有効（publicフォルダ下のimagesにどんどんアップロードした画像が保存される）
-    # save_path = "./public/images/#{file_address}"
-    #
-    # File.open(save_path, "wb") do |f|
-    #   f.write params[:file][:tempfile].read
-    # end
+    save_path = "./images/#{file_address}"
+
+    File.open(save_path, "wb") do |f|
+      f.write params[:file][:tempfile].read
+    end
 
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
@@ -183,7 +181,6 @@ class MineApp < Sinatra::Base
   end
 
   get "/mypage" do
-    @photo = Photo.find_by(file_belongs: @current_user.profile_url)
     erb :mypage
   end
 end
@@ -204,6 +201,4 @@ end
 class Fadd < ActiveRecord::Base
 end
 
-class Photo < ActiveRecord::Base
-end
 
