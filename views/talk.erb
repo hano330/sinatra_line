@@ -14,7 +14,7 @@
             <div class="me">
               <big><%= h post.body %></big><br>
               <small>
-                <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h post.name %>
+                <%= h post.created_at.strftime("%H:%M") %> by <%= h post.name %>
                 <% if post.kidoku == 1 %>
                     ：既読
                 <% end %>
@@ -24,7 +24,7 @@
             <div class="you">
               <big><%= h post.body %></big><br>
               <small>
-                <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h post.name %>
+                <%= h post.created_at.strftime("%H:%M") %> by <%= h post.name %>
               </small>
             </div>
           <% end %>
