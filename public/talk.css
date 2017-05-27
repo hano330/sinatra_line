@@ -115,3 +115,9 @@ div#wrapper {
     text-align: left;
     border: inset 5px #00bfff;
 }
+
+.fixing-base .fixing-box.fixed {
+    position: fixed;
+    top: 0;
+    z-index: 9999;
+}

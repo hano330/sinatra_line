@@ -39,3 +39,10 @@
   <input type="submit" class="button" style="font-size:20px;font-family:arial;" value="Send">
   <a href="/"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="Back"></a>
 </form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  $("textarea").click(function(){
+     $("#wrapper").scrollTop($("#wrapper").height());
+  });
+</script>
