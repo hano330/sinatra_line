@@ -1,5 +1,5 @@
 require "bundler"
-Bundler.require
+Bundler.require(:default, :production)
 
 require "rack-flash"
 require "tempfile"
@@ -7,9 +7,9 @@ require "tempfile"
 class MineApp < Sinatra::Base
   configure do
     # DB設定ファイルの読み込み
-    #db/database.ymlにしないならどうやって読み込むかわからなくなった・・・
-    #ActiveRecord::Base.configurations = YAML.load_file("db/database.yml")
-    ActiveRecord::Base.establish_connection(ENV["postgresql-flexible-24081"] || "postgres://mwvfdbywwseysv:3a1e0ca5ba219e2bf4e8aa6d1290fb01c71f565f335fcbf8701524eb676ae5e3@ec2-184-73-236-170.compute-1.amazonaws.com:5432/d3suersi6s7tmn")
+    ActiveRecord::Base.configurations = YAML.load_file("./config/database.yml")
+    ActiveRecord::Base.establish_connection(:development)
+    #ActiveRecord::Base.establish_connection(ENV["postgresql-flexible-24081"] || "postgres://mwvfdbywwseysv:3a1e0ca5ba219e2bf4e8aa6d1290fb01c71f565f335fcbf8701524eb676ae5e3@ec2-184-73-236-170.compute-1.amazonaws.com:5432/d3suersi6s7tmn")
   end
 
   set :public_folder, File.dirname(__FILE__) + "/public"
@@ -165,7 +165,7 @@ class MineApp < Sinatra::Base
     file_address = "#{@current_user.id}.#{type}"
 
     #下記のコードはローカルで実行するなら有効（publicフォルダ下のimagesにどんどんアップロードした画像が保存される）
-    save_path = "./images/#{file_address}"
+    save_path = "./public/images/#{file_address}"
 
     File.open(save_path, "wb") do |f|
       f.write params[:file][:tempfile].read
