@@ -78,10 +78,10 @@ class MineApp < Sinatra::Base
 
     #VaridationでIDとPWが入力されたかどうかをチェック
     if user.valid?
-      flash[:notice] = "ユーザー登録が完了しました。ログインしてください。"
+      flash[:notice] = "Signup has succeeded. Please login then."
       erb :login
     else
-      flash[:notice] = "IDとPWを入力して登録ボタンを押してください。"
+      flash[:notice] = "Please fill in NAME and PASSWORD and press Signup button."
       erb :signup
     end
   end
@@ -100,17 +100,17 @@ class MineApp < Sinatra::Base
     #userが存在し、userのpasswordが一致するか
     if user && user.authenticate(params[:password])
       session[:user_name] = user.name
-      flash[:notice] = "ログインに成功しました。"
+      flash[:notice] = "Login has succeeded."
       redirect "/"
     else
-      flash[:notice] = "ログインしてください。"
+      flash[:notice] = "Please make sure to login."
       erb :login
     end
   end
 
   post "/logout" do
     session.clear
-    flash[:notice] = "ログアウトしました。"
+    flash[:notice] = "Logout has succeeded."
     redirect"/"
   end
 
