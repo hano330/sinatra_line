@@ -2,7 +2,7 @@ require "bundler"
 Bundler.require(:default, :production)
 
 require "rack-flash"
-require "tempfile"
+require "sinatra/reloader"
 
 class MineApp < Sinatra::Base
   configure do
