@@ -1,5 +1,5 @@
 <% content_for :title do %>
-    MINE|ログイン
+    MINE|Login
 <% end %>
 
 <% content_for :css do %>
@@ -7,11 +7,11 @@
 <% end %>
 
 <div class="form_conf">
-  <h3>MINEはオープンソースのSMSアプリケーションです。</h3>
+  <h3>MINE is open sourse SMS application made by Masa.</h3>
   <form action="/login" method="post">
-    <p>　名前　　: <input type="text" name="name" size="20" maxlength="10"></p>
-    <p>パスワード: <input type="password" name="password" size="20" maxlength="10"></p>
-    <input class="button" type="submit" style="font-size:20px;font-family:arial" value="ログイン" >
-    <a href="/signup"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="新規登録"></a>
+    <p>　NAME　　: <input type="text" name="name" size="20" maxlength="10"></p>
+    <p>PASSWORD: <input type="password" name="password" size="20" maxlength="10"></p>
+    <input class="button" type="submit" style="font-size:20px;font-family:arial" value="Login" >
+    <a href="/signup"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="Signup"></a>
   </form>
 </div>

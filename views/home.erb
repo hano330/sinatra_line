@@ -20,14 +20,20 @@ function ChangeTab(tabname) {
 
 <div class="tabbox">
 
-  <h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>
-  <p id="instruction">友達の名前をクリックすると、メッセージが送れるよ！<br>リクエストを送信したり承認したらページを更新してね！</p>
+  <!--<h1>MINEへようこそ、<%= @current_user.name %>さん。</h1>-->
+  <h1>Welcome to MINE, <%= @current_user.name %>.</h1>
+  <!--<p id="instruction">友達の名前をクリックすると、メッセージが送れるよ！<br>リクエストを送信したり承認したらページを更新してね！</p>-->
+  <p id="instruction">You can send a message if you click your friend's name!<br>Please don't forget to update a page after requesting or accepting for friend!</p>
 
   <p class="tabs">
-    <a href="#tab1" class="tab1" onclick="ChangeTab('tab1');return false;">友だち</a>
-    <a href="#tab2" class="tab2" onclick="ChangeTab('tab2');return false;">ユーザー</a>
-    <a href="#tab3" class="tab3" onclick="ChangeTab('tab3');return false;">リクエスト受信</a>
-    <a href="#tab4" class="tab4" onclick="ChangeTab('tab4');return false;">リクエスト中</a>
+    <!--<a href="#tab1" class="tab1" onclick="ChangeTab('tab1');return false;">友だち</a>-->
+    <!--<a href="#tab2" class="tab2" onclick="ChangeTab('tab2');return false;">ユーザー</a>-->
+    <!--<a href="#tab3" class="tab3" onclick="ChangeTab('tab3');return false;">リクエスト受信</a>-->
+    <!--<a href="#tab4" class="tab4" onclick="ChangeTab('tab4');return false;">リクエスト中</a>-->
+    <a href="#tab1" class="tab1" onclick="ChangeTab('tab1');return false;">Friend</a>
+    <a href="#tab2" class="tab2" onclick="ChangeTab('tab2');return false;">All User</a>
+    <a href="#tab3" class="tab3" onclick="ChangeTab('tab3');return false;">Requested</a>
+    <a href="#tab4" class="tab4" onclick="ChangeTab('tab4');return false;">Requesting</a>
   </p>
 
   <div id="tab1" class="tab">
@@ -132,7 +138,8 @@ function ChangeTab(tabname) {
         <% end %>
       <% else %>
         <p style="font-size:20px; text-align:center;">リクエストはありません</p>
-      <% end %>
+        <p style="font-size:20px; text-align:center;">Nobody's requesting</p>
+    <% end %>
     </div>
 
     <div id="tab4" class="tab">
@@ -145,7 +152,8 @@ function ChangeTab(tabname) {
             <hr>
         <% end %>
       <% else %>
-        <p style="font-size:20px; text-align:center;">リクエスト中の人はいません</p>
+        <!--<p style="font-size:20px; text-align:center;">リクエスト中の人はいません</p>-->
+        <p style="font-size:20px; text-align:center;">You're not requesting</p>
       <% end %>
     </div>
 </div>
@@ -165,7 +173,7 @@ ChangeTab('tab1');
     $(".requestCmd").click(function() {
         var el1 = $(this).parent();
         var el2 = $(this).parents("#list").find("hr");
-        if (confirm("友達リクエストを送信しますか？")){
+        if (confirm("Are you sure to send the friend request?")){
             /* 正直ここの意味を深く理解しているわけではない */
             $.post("/request", {
                 name: el1.data("name")
@@ -179,7 +187,7 @@ ChangeTab('tab1');
     $(".acceptreqCmd").click(function() {
         var el1 = $(this).parent();
         var el2 = $(this).parents("#list2").find("hr");
-        if (confirm("リクエストを許可しますか？")){
+        if (confirm("Are you sure to accept the friend request?")){
           /* 正直ここの意味を深く理解しているわけではない */
             $.post("/acceptreq", {
                 name: el1.data("name")

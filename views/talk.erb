@@ -1,5 +1,5 @@
 <% content_for :title do %>
-    トーク|<%= @to_user.name %>
+    Talk|<%= @to_user.name %>
 <% end %>
 
 <% content_for :css do %>
@@ -16,7 +16,7 @@
               <small>
                 <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h post.name %>
                 <% if post.kidoku == 1 %>
-                    ：既読
+                    ：Seen
                 <% end %>
               </small>
             </div>
@@ -30,12 +30,12 @@
           <% end %>
     <% end %>
   <% else %>
-     <h2><%= @to_user.name %>さんに初メッセージを送ろう！</h2>
+     <h2>Please send a first messeage to <%= @to_user.name %>!</h2>
   <% end %>
 </div>
 
 <form method="post" action="/new">
-  <p><textarea name="body" rows="5" cols="40" style="font-size:15px"placeholder="ここに入力してください。"></textarea></p>
-  <input type="submit" class="button" style="font-size:20px;font-family:arial;"　value="送信">
+  <p><textarea name="body" rows="5" cols="40" style="font-size:15px"placeholder="Please write here."></textarea></p>
+  <input type="submit" class="button" style="font-size:20px;font-family:arial;"　value="Submit">
   <a href="/"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="戻る"></a>
 </form>
