@@ -13,7 +13,7 @@
 <!--<img id="me" width="100px" height="100px" src="./images/<%= @current_user.profile_url %>">-->
 
 <% if @photo %>
-<img src="<%= @photo.file %>">
+<%= @photo.file %>
 <% end %>
 
 <form method="post" action="/newphoto" enctype="multipart/form-data">
