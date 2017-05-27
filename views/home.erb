@@ -127,7 +127,6 @@ function ChangeTab(tabname) {
     <div id="tab3" class="tab">
       <% if @reqds.present? %>
         <% @reqds.each do |reqd| %>
-          <% user = User.find_by(name: reqd.req_from) %>
           <div id="list2">
             <p data-name="<%= reqd.req_from %>">
               <%= reqd.req_from %>
@@ -137,7 +136,7 @@ function ChangeTab(tabname) {
           </div>
         <% end %>
       <% else %>
-        <p style="font-size:20px; text-align:center;">リクエストはありません</p>
+        <!--<p style="font-size:20px; text-align:center;">リクエストはありません</p>-->
         <p style="font-size:20px; text-align:center;">Nobody's requesting</p>
     <% end %>
     </div>
@@ -145,7 +144,6 @@ function ChangeTab(tabname) {
     <div id="tab4" class="tab">
       <% if @reqs.present? %>
         <% @reqs.each do |req| %>
-           <% user = User.find_by(name: req.req_to) %>
             <p data-name="<%= req.req_to %>">
               <%= req.req_to %>
             </p>
