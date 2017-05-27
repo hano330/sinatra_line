@@ -37,14 +37,14 @@ body {
     background-color: #59b1eb;
 }
 
-h1, p {
+h2, p {
     font-weight: bold;
     font-family: arial;
     color: #00bfff;
     text-align: center;
 }
 
-h2, h3 {
+h1 {
     font-weight: bold;
     font-family: arial;
     color: #0000ff;
