@@ -16,7 +16,7 @@
               <small>
                 <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h post.name %>
                 <% if post.kidoku == 1 %>
-                    ：Seen
+                    :Seen
                 <% end %>
               </small>
             </div>
@@ -37,5 +37,5 @@
 <form method="post" action="/new">
   <p><textarea name="body" rows="5" cols="40" style="font-size:15px"placeholder="Please write here."></textarea></p>
   <input type="submit" class="button" style="font-size:20px;font-family:arial;"　value="Submit">
-  <a href="/"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="戻る"></a>
+  <a href="/"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="Return"></a>
 </form>
