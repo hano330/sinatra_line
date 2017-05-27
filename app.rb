@@ -12,8 +12,6 @@ class MineApp < Sinatra::Base
     ActiveRecord::Base.establish_connection(ENV["postgresql-flexible-24081"] || "postgres://mwvfdbywwseysv:3a1e0ca5ba219e2bf4e8aa6d1290fb01c71f565f335fcbf8701524eb676ae5e3@ec2-184-73-236-170.compute-1.amazonaws.com:5432/d3suersi6s7tmn")
   end
 
-  #ローカルでやる場合はこれでok
-  # set :public_folder, File.dirname(__FILE__) + "/public"
   set :public_folder, File.dirname(__FILE__) + "/public"
 
   #セッション開始
@@ -166,11 +164,12 @@ class MineApp < Sinatra::Base
 
     file_address = "#{@current_user.id}.#{type}"
 
-    save_path = "https://mine-masapp-201705.herokuapp.com/public/images/#{file_address}"
-
-    File.open(save_path, "wb") do |f|
-      f.write params[:file][:tempfile].read
-    end
+    photo = Photo.create(file_belongs: file_address, file: params[:file][:tempfile].read)
+    # save_path = "./public/images/#{file_address}"
+    #
+    # File.open(save_path, "wb") do |f|
+    #   f.write params[:file][:tempfile].read
+    # end
 
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
