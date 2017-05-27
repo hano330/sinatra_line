@@ -166,7 +166,7 @@ class MineApp < Sinatra::Base
 
     file_address = "#{@current_user.id}.#{type}"
 
-    save_path = "https://mine-masapp-201705.herokuapp.com/images/#{file_address}"
+    save_path = "https://mine-masapp-201705.herokuapp.com/public/images/#{file_address}"
 
     File.open(save_path, "wb") do |f|
       f.write params[:file][:tempfile].read
