@@ -13,7 +13,8 @@
           <% if post.name == @current_user.name %>
             <div class="me">
               <div class="my_content">
-                <big><%= h post.body %></big><br>
+                <big><%= h post.body %></big>
+              </div>
                 <div class="my_time">
                   <small>
                     <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h post.name %>
@@ -22,7 +23,6 @@
                     <% end %>
                   </small>
                 </div>
-              </div>
             </div>
           <% elsif post.name == @to_user.name %>
             <div class="you">
@@ -51,6 +51,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
   $("textarea").click(function(){
-     $("#wrapper").scrollTop($(document).height());
+     $("#wrapper").scrollTop(999);
   });
 </script>

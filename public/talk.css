@@ -69,9 +69,7 @@ form {
 }
 
 .you  {
-    margin-top: 20px;
-    margin-left: 20px;
-    margin-right: 70px;
+    margin: 20px 100px 40px 20px;
     font-weight: bold;
     font-family: arial;
     color: #00bfff;
@@ -80,9 +78,7 @@ form {
 
 .me {
     text-align: right;
-    margin-top: 20px;
-    margin-right: 20px;
-    margin-left: 70px;
+    margin: 20px 20px 40px 100px;
     font-weight: bold;
     font-family: arial;
     color: #00bfff;
@@ -114,10 +110,4 @@ div#wrapper {
     margin: 0 auto;
     text-align: left;
     border: inset 5px #00bfff;
-}
-
-.fixing-base .fixing-box.fixed {
-    position: fixed;
-    top: 0;
-    z-index: 9999;
 }
