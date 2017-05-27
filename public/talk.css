@@ -37,14 +37,14 @@ body {
     background-color: #59b1eb;
 }
 
-h1, p {
+h2, p {
     font-weight: bold;
     font-family: arial;
     color: #00bfff;
     text-align: center;
 }
 
-h2, h3 {
+h1 {
     font-weight: bold;
     font-family: arial;
     color: #0000ff;
@@ -71,6 +71,7 @@ form {
 .you  {
     margin-top: 20px;
     margin-left: 20px;
+    margin-right: 70px;
     font-weight: bold;
     font-family: arial;
     color: #00bfff;
@@ -81,13 +82,34 @@ form {
     text-align: right;
     margin-top: 20px;
     margin-right: 20px;
+    margin-left: 70px;
     font-weight: bold;
     font-family: arial;
     color: #00bfff;
 }
 
+
+.my_content {
+    display: inline-block;
+    text-align: left;
+}
+
+.my_time {
+    text-align: right
+}
+
+.your_content {
+    display: inline-block;
+    text-align: left;
+}
+
+.your_time {
+    text-align: left;
+}
+
+
 div#wrapper {
-    width: 800px;
+    width: 500px;
     height: 500px;
     margin: 0 auto;
     text-align: left;

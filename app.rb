@@ -1,7 +1,8 @@
 require "bundler"
-Bundler.require
+Bundler.require(:default, :production)
 
 require "rack-flash"
+require "tempfile"
 
 class MineApp < Sinatra::Base
   configure do
@@ -152,42 +153,6 @@ class MineApp < Sinatra::Base
     redirect "/"
   end
 
-  post "/newphoto" do
-    type = if params[:file][:type] == "image/png"
-             "png"
-           elsif params[:file][:type] == "image/jpeg"
-             "jpeg"
-           elsif params[:file][:type] == "image/gif"
-             "gif"
-           end
-
-    file_address = "#{@current_user.id}.#{type}"
-
-    save_path = "./images/#{file_address}"
-
-    File.open(save_path, "wb") do |f|
-      f.write params[:file][:tempfile].read
-    end
-
-    # #File.openとFile.writeをつかって原始的にやってみる
-    # photo = Photo.create(file_belongs: file_address)
-    # File.open("test", "wb") do |f|
-    #   f.write params[:file][:tempfile].read
-    # end
-    # photo.file = test
-
-    if @current_user.update(profile_url: file_address)
-      flash[:notice] = "プロフィール写真の変更に成功しました。"
-      redirect "/mypage"
-    else
-      flash[:notice] = "プロフィール写真の変更に失敗しました。"
-      redirect "/mypage"
-    end
-  end
-
-  get "/mypage" do
-    erb :mypage
-  end
 end
 
 class User < ActiveRecord::Base
@@ -206,6 +171,4 @@ end
 class Fadd < ActiveRecord::Base
 end
 
-class Photo < ActiveRecord::Base
-end
 
