@@ -12,7 +12,9 @@
 <p>現在のプロフィール写真</p>
 <!--<img id="me" width="100px" height="100px" src="./images/<%= @current_user.profile_url %>">-->
 
+<% if @photo %>
 <img src="<%= @photo.file %>">
+<% end %>git
 
 <form method="post" action="/newphoto" enctype="multipart/form-data">
   <input type="file" name="file" size="20" style="font-size:15px;">
