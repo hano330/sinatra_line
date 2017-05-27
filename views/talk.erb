@@ -9,33 +9,41 @@
 <h1><%= @to_user.name %></h1>
 <div id="wrapper" style="overflow: auto;">
   <% if @posts.present? %>
-    <% @posts.each do |post| %>
+      <% @posts.each do |post| %>
           <% if post.name == @current_user.name %>
-            <div class="me">
-              <big><%= h post.body %></big><br>
-              <small>
-                <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h post.name %>
-                <% if post.kidoku == 1 %>
-                    ：既読
-                <% end %>
-              </small>
-            </div>
+              <div class="me">
+                <div class="my_content">
+                  <big><%= h post.body %></big>
+                  <div class="my_time">
+                    <small>
+                      <%= h post.created_at.strftime("%H:%M") %> by <%= h post.name %>
+                      <% if post.kidoku == 1 %>
+                          ：既読
+                      <% end %>
+                    </small>
+                  </div>
+                </div>
+              </div>
           <% elsif post.name == @to_user.name %>
-            <div class="you">
-              <big><%= h post.body %></big><br>
-              <small>
-                <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h post.name %>
-              </small>
-            </div>
+              <div class="you">
+                <div class="your_content">
+                  <big><%= h post.body %></big>
+                  <div class="your_time">
+                    <small>
+                      <%= h post.created_at.strftime("%H:%M") %> by <%= h post.name %>
+                    </small>
+                  </div>
+                </div>
+              </div>
           <% end %>
-    <% end %>
+      <% end %>
   <% else %>
-     <h1><%= @to_user.name %>さんに初メッセージを送ろう！</h1>
+      <h2><%= @to_user.name %>さんに初メッセージを送ろう！</h2>
   <% end %>
 </div>
 
 <form method="post" action="/new">
-  <p><textarea name="body" rows="5" cols="40" style="font-size:15px"placeholder="ここに入力してください。"></textarea></p>
+  <p><textarea name="body" rows="5" cols="30" style="font-size:15px"placeholder="ここに入力してください。"></textarea></p>
   <input type="submit" class="button" style="font-size:20px;font-family:arial;"　value="送信">
   <a href="/"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="戻る"></a>
 </form>
