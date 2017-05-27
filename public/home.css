@@ -192,14 +192,14 @@ div.tab p { margin: 0.5em; }
     color: red;
 }
 
-#tab1 img {
+#tab1 p {
     display: inline;
     margin-top: 10px;
     margin-left: 10px;
     margin-bottom: -10px;
 }
 
-#tab2 img {
+#tab2 p {
     display: inline;
     margin-top: 10px;
     margin-left: 10px;
@@ -213,14 +213,14 @@ div.tab p { margin: 0.5em; }
     margin-bottom: -10px;
 }
 
-#tab3 img {
+#tab3 p {
     display: inline;
     margin-top: 10px;
     margin-left: 10px;
     margin-bottom: -10px;
 }
 
-#tab4 img {
+#tab4 p {
     display: inline;
     margin-top: 10px;
     margin-left: 10px;
