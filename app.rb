@@ -1,5 +1,5 @@
 require "bundler"
-Bundler.require(:default, :production)
+Bundler.require(:default, :development)
 
 require "rack-flash"
 require "sinatra/reloader"
