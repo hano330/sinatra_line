@@ -11,7 +11,7 @@
 
 <p>現在のプロフィール写真</p>
 <% if @photo.present? %>
-<img id="me" width="100px" height="100px" src="./images/<%= @current_user.profile_url %>">
+<img id="me" width="100px" height="100px" src="<%= @current_user.profile_url %>">
 <% end %>
 
 <form method="post" action="/newphoto" enctype="multipart/form-data">
