@@ -167,11 +167,11 @@ class MineApp < Sinatra::Base
 
     # save_path = "./images/#{file_address}"
 
-    photo = Photo.create(file_belongs: file_address)
+    photo = Photo.create(file_belongs: file_address file: params[:file])
 
-    File.open(photo.file, "wb") do |f|
-      f.write params[:file][:tempfile].read
-    end
+    # File.open(photo.file, "wb") do |f|
+    #   f.write params[:file][:tempfile].read
+    # end
 
     # #File.openとFile.writeをつかって原始的にやってみる
     # photo = Photo.create(file_belongs: file_address)
