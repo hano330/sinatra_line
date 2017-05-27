@@ -29,7 +29,7 @@ class CreateMigration < ActiveRecord::Migration[5.1]
     end
 
     create_table :photos  do |p|
-      p.string :file
+      p.binary :file
       p.string :file_belongs
     end
 
