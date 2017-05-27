@@ -165,6 +165,7 @@ class MineApp < Sinatra::Base
     file_address = "#{@current_user.id}.#{type}"
 
     photo = Photo.create(file_belongs: file_address, file: params[:file][:tempfile].read)
+    binding.pry
     #下記のコードはローカルで実行するなら有効（publicフォルダ下のimagesにどんどんアップロードした画像が保存される）
     # save_path = "./public/images/#{file_address}"
     #
