@@ -2,6 +2,7 @@ require "bundler"
 Bundler.require
 
 require "rack-flash"
+require "tempfile"
 
 class MineApp < Sinatra::Base
   configure do
@@ -167,18 +168,13 @@ class MineApp < Sinatra::Base
 
     # save_path = "./images/#{file_address}"
 
-    photo = Photo.create(file_belongs: file_address, file: params[:file][:tempfile])
+    photo = Photo.create(file_belongs: file_address)
+    photo_file = photo.file
 
-    # File.open(photo.file, "wb") do |f|
-    #   f.write params[:file][:tempfile].read
-    # end
+    File.open(photo_file, "wb") do |f|
+      f.write params[:file][:tempfile].read
+    end
 
-    # #File.openとFile.writeをつかって原始的にやってみる
-    # photo = Photo.create(file_belongs: file_address)
-    # File.open("test", "wb") do |f|
-    #   f.write params[:file][:tempfile].read
-    # end
-    # photo.file = test
 
     if @current_user.update(profile_url: file_address)
       flash[:notice] = "プロフィール写真の変更に成功しました。"
