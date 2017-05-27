@@ -166,7 +166,6 @@ ChangeTab('tab1');
         var el1 = $(this).parent();
         var el2 = $(this).parents("#list").find("hr");
         if (confirm("友達リクエストを送信しますか？")){
-            /* 正直ここの意味を深く理解しているわけではない */
             $.post("/request", {
                 name: el1.data("name")
             }, function () {
@@ -180,7 +179,6 @@ ChangeTab('tab1');
         var el1 = $(this).parent();
         var el2 = $(this).parents("#list2").find("hr");
         if (confirm("リクエストを許可しますか？")){
-          /* 正直ここの意味を深く理解しているわけではない */
             $.post("/acceptreq", {
                 name: el1.data("name")
             }, function () {
