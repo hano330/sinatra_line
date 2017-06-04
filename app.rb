@@ -232,12 +232,12 @@ class MineApp < Sinatra::Base
 
     if !room?
       @check_if_already = Talkroom.where("(name =  ?) OR (name = ?)", @to_user.name, @current_user.name)
-      if @check_if_already == []
+      if @check_if_already == nil
         @talk_room = @current_user.talkrooms.create(name: @to_user.name)
         session[:rid] = @talk_room.id
         @make_it_known = Post.create(talkroom_id: session[:rid], user_id: @to_user.id)
       else
-        session[:rid] = @check_if_already.ids
+        session[:rid] = @check_if_already.ids[0]
       end
     end
 
