@@ -82,7 +82,7 @@ function ChangeTab(tabname) {
           <% end %>
           <a href="/talk/room/<%= talkroom_info[0] %>/<%= talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= talkroom_info[0] %></a>
           <% if talkroom_info[2].present? %>
-          <small><%= talkroom_info[1].truncate(23) %><%= talkroom_info[2].in_time_zone("Tokyo").strftime("%m/%d %H:%M") %></small>
+          <small style="color:gray"><%= talkroom_info[1].truncate(23) %><%= talkroom_info[2].in_time_zone("Tokyo").strftime("%m/%d %H:%M") %></small>
           <% end %>
         </div>
         <hr>

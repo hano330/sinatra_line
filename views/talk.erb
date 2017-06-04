@@ -12,6 +12,7 @@
     <% @posts.each do |post| %>
           <% if post.user_id == @current_user.id && post.body != nil %>
             <div class="me">
+              <div class="my_content">
               <big><%= h post.body %></big><br>
               <small>
                 <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h @current_user.name %>
@@ -19,6 +20,7 @@
                     ：既読
                 <% end %>
               </small>
+              </div>
             </div>
           <% elsif post.user_id == @to_user.id && post.body != nil %>
             <div class="you">
