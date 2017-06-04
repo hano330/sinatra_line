@@ -1,6 +1,6 @@
 require "rubygems"
 require "bundler"
-Bundler.require(:default, :production)
+Bundler.require(:default, :development)
 
 require_relative "./app"
 

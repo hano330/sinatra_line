@@ -10,33 +10,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170523043833) do
+ActiveRecord::Schema.define(version: 20170529024653) do
 
-  create_table "fadds", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "req_from", limit: 10, null: false
-    t.string "req_to", limit: 10, null: false
-  end
-
-  create_table "friends", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "user_name", limit: 10, null: false
-    t.string "frie_name", limit: 10, null: false
-  end
-
-  create_table "photos", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "file"
-  end
-
-  create_table "posts", id: :integer, unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "name", limit: 10, null: false
+  create_table "posts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "talkroom_id"
+    t.bigint "user_id"
     t.text "body"
-    t.timestamp "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "sent_to", limit: 10, null: false
     t.integer "kidoku"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["talkroom_id"], name: "index_posts_on_talkroom_id"
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
-  create_table "users", id: :integer, unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "name", null: false
-    t.string "password_digest", null: false
+  create_table "relationships", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "user_id"
+    t.integer "friend_id"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_relationships_on_user_id"
+  end
+
+  create_table "talkrooms", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "name"
+    t.string "password_digest"
+    t.string "profile_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end

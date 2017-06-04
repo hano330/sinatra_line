@@ -25,166 +25,184 @@ function ChangeTab(tabname) {
 
   <p class="tabs">
     <a href="#tab1" class="tab1" onclick="ChangeTab('tab1');return false;">友だち</a>
-    <a href="#tab2" class="tab2" onclick="ChangeTab('tab2');return false;">ユーザー</a>
-    <a href="#tab3" class="tab3" onclick="ChangeTab('tab3');return false;">リクエスト受信</a>
-    <a href="#tab4" class="tab4" onclick="ChangeTab('tab4');return false;">リクエスト中</a>
+    <a href="#tab3" class="tab3" onclick="ChangeTab('tab2');return false;">
+      <% if @newpost.present? %>
+          <span style="font-size:17px;color:red;vertical-align:middle">*</span>
+      <% end %>
+      トーク
+    </a>
+    <a href="#tab2" class="tab2" onclick="ChangeTab('tab3');return false;">
+      <% if @requesteds.present? %>
+        <span style="font-size:17px;color:red;vertical-align:middle">*</span>
+      <% end %>
+      リクエスト
+    </a>
+    <a href="#tab4" class="tab4" onclick="ChangeTab('tab4');return false;">あなた</a>
   </p>
 
   <div id="tab1" class="tab">
-    <% @friends.each do |friend| %>
-        <% user = User.find_by(name: friend.frie_name) %>
-        <a href="/hello/<%= friend.frie_name %>"><%= friend.frie_name %></a>
+    <p style="font-size:20px; text-align:center;">友達を追加しよう！</p>
+    <form method="post" action="/friend_search">
+      <input name="id" type="text" style="font-size:20px" placeholder="友達のIDを入力してね">
+      <input type="submit" id="search" style="font-size:20px;" value="検索">
+    </form>
+    <hr>
+    <% if session[:perhaps_friend].present? %>
+      <div class="searched_area">
+        <div class="searched_friends">
+          <img width="70px" height="70px" src="./images/<%= session[:perhaps_friend].profile_url %>">
+          <p data-id="<%= session[:perhaps_friend].id %>">
+            <%= session[:perhaps_friend].name %>
+            <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
+          </p>
+        </div>
         <hr>
+      </div>
+    <% end %>
+    <% if @friends.present? %>
+      <% @friends.each do |friend| %>
+          <div class="friend">
+            <img width="70px" height="70px" src="./images/<%= friend.profile_url %>">
+            <p data-id="<%= friend.id %>">
+              <a href="/talk/<%= friend.id %>" style="cursor:pointer;text-decoration:none;"><%= friend.name %></a>
+            </p>
+          </div>
+          <hr>
+      <% end %>
     <% end %>
   </div>
 
-    <div id="tab2" class="tab">
-        <% @users.each do |user| %>
-            <% if @friends.present? && @reqs.present? %>
-                <% @friends.each do |friend| %>
-                    <% if user.name == friend.frie_name || user.name == @current_user.name %>
-                        <% break %>
-                    <% end %>
-                    <% @i += 1 %>
-                    <% if @i == @friends.size %>
-                      <% @reqs.each do |req| %>
-                          <% if user.name == req.req_to %>
-                              <% break %>
-                          <% end %>
-                          <% @x += 1 %>
-                          <% if @x == @reqs.size %>
-                          <div id="list">
-                            <p data-name="<%= user.name %>">
-                              <%= user.name %>
-                              <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-                            </p>
-                            <hr>
-                          </div>
-                          <% end %>
-                      <% end %>
-                    <% end %>
-                <% end %>
-                <% @i = 0 %>
-            <% elsif @friends.present? %>
-                <% @friends.each do |friend| %>
-                    <% if user.name == friend.frie_name || user.name == @current_user.name %>
-                        <% break %>
-                    <% end %>
-                    <% @i += 1 %>
-                    <% if @i == @friends.size %>
-                    <div id="list">
-                      <p data-name="<%= user.name %>">
-                        <%= user.name %>
-                        <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-                      </p>
-                      <hr>
-                    </div>
-                    <% end %>
-                <% end %>
-                <% @i = 0 %>
-            <% elsif @reqs.present? %>
-                <% @reqs.each do |req| %>
-                    <% if user.name == req.req_to || user.name == @current_user.name %>
-                        <% break %>
-                    <% end %>
-                    <% @i += 1 %>
-                    <% if @i == @reqs.size %>
-                    <div id="list">
-                      <p data-name="<%= user.name %>">
-                        <%= user.name %>
-                        <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-                      </p>
-                      <hr>
-                    </div>
-                    <% end %>
-                <% end %>
-                <% @i = 0 %>
-            <% else %>
-                <% if user.name == @current_user.name %>
-                  <% next %>
-                <% end %>
-                <div id="list">
-                  <p data-name="<%= user.name %>">
-                    <%= user.name %>
-                    <span class="requestCmd" style="cursor:pointer;color:blue">[+]</span>
-                  </p>
-                  <hr>
-                </div>
-            <% end %>
-        <% end %>
-        <p>
-         <%= @current_user.name %>
-        </p>
+  <div id="tab2" class="tab">
+    <% if @talkrooms.present? %>
+      <br>
+      <% @talkrooms.each do |talkroom_id, talkroom_info| %>
+        <div class="talkroom">
+          <% if talkroom_info[1].present? %>
+              <span id ="new" style="color:red;font-size:15px;font-family:arial">NEW</span>
+          <% end %>
+          <a href="/talk/room/<%= talkroom_info[0] %>/<%= talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= talkroom_info[0] %></a>
+          <% if talkroom_info[2].present? %>
+          <small><%= talkroom_info[1].truncate(23) %><%= talkroom_info[2].in_time_zone("Tokyo").strftime("%m/%d %H:%M") %></small>
+          <% end %>
+        </div>
         <hr>
-    </div>
-
-    <div id="tab3" class="tab">
-      <% if @reqds.present? %>
-        <% @reqds.each do |reqd| %>
-          <% user = User.find_by(name: reqd.req_from) %>
-          <div id="list2">
-            <p data-name="<%= reqd.req_from %>">
-              <%= reqd.req_from %>
-              <span class="acceptreqCmd" style="cursor:pointer;color:blue">[OK]</span>
-            </p>
-            <hr>
-          </div>
-        <% end %>
-      <% else %>
-        <p style="font-size:20px; text-align:center;">リクエストはありません</p>
       <% end %>
-    </div>
+    <% else %>
+      <p style="font-size:20px;">トークはありません</p>
+    <% end %>
+  </div>
 
-    <div id="tab4" class="tab">
-      <% if @reqs.present? %>
-        <% @reqs.each do |req| %>
-           <% user = User.find_by(name: req.req_to) %>
-            <p data-name="<%= req.req_to %>">
-              <%= req.req_to %>
-            </p>
-            <hr>
+  <div id="tab3" class="tab">
+    <% if @requesteds.present? %>
+        <br>
+        <% @requesteds.each do |requested| %>
+            <div class="requested_area">
+              <div class="requested">
+                <img width="70px" height="70px" src="./images/<%= requested.profile_url %>">
+                <p data-id="<%= requested.id %>">
+                  <%= requested.name %>
+                  <a class="button acceptCmd" style="cursor:pointer;font-size:20px;">承認</a>
+                  <a class="button deleteCmd" style="cursor:pointer;font-size:20px;">拒否</a>
+                </p>
+                <hr>
+              </div>
+            </div>
         <% end %>
-      <% else %>
-        <p style="font-size:20px; text-align:center;">リクエスト中の人はいません</p>
-      <% end %>
+    <% else %>
+        <p style="font-size:20px;">リクエストはありません</p>
+    <% end %>
+  </div>
+
+  <div id="tab4" class="tab">
+    <div id="profile">
+      <small>現在のプロフィール画像</small>
+      <p><img width="130px" height="130px" src="./images/<%= @current_user.profile_url %>"></p>
+      <p><%= @current_user.name %></p>
     </div>
+    <form method="post" action="/newphoto" enctype="multipart/form-data">
+      <p>画像変更</p>
+      <input type="file" name="file" size="20" style="font-size:15px;">
+      <p><input type="submit" style="font-size:20px;font-family:serif;" value="アップロード"></p>
+    </form>
+  </div>
 </div>
 
 <script type="text/javascript"><!--
 // デフォルトのタブを選択
-ChangeTab('tab1');
+ChangeTab('tab2');
 // --></script>
 
-<form action="/logout" method="post">
+<form id="logout" action="/logout" method="post">
   <button class="button" type="submit" style="font-size:15px;font-family:arial">ログアウト</button>
 </form>
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
     $(".requestCmd").click(function() {
-        var el1 = $(this).parent();
-        var el2 = $(this).parents("#list").find("hr");
+        var el = $(this).parent();
+        var el2 = $(this).parents(".searched_area").find("hr");
+        var el3 = $(this).parents(".searched_friends").find("img");
         if (confirm("友達リクエストを送信しますか？")){
-            $.post("/request", {
-                name: el1.data("name")
-            }, function () {
-                el2.fadeOut(500);
-                el1.fadeOut(500);
-            });
-        }
-    }),
-
-    $(".acceptreqCmd").click(function() {
-        var el1 = $(this).parent();
-        var el2 = $(this).parents("#list2").find("hr");
-        if (confirm("リクエストを許可しますか？")){
-            $.post("/acceptreq", {
-                name: el1.data("name")
-            }, function () {
-                el2.fadeOut(500);
-                el1.fadeOut(500);
-            });
+            $.post(
+                "/request",
+                {
+                    id: el.data("id")
+                },
+                function(){
+                    el2.fadeOut(500);
+                    el3.fadeOut(500);
+                    el.fadeOut(500);
+                }
+            );
         }
     });
+
+    $(".acceptCmd").click(function() {
+        var el = $(this).parent();
+        var el2 = $(this).parents('.requested_area').find('hr');
+        var el3 = $(this).parents('.requested').find('img');
+        if (confirm("リクエストを承認しますか？")){
+            $.post(
+                "/accept",
+                {
+                    id: el.data("id")
+                },
+                function () {
+                    el3.fadeOut(500);
+                    el2.fadeOut(500);
+                    el.fadeOut(500);
+                }
+            );
+        }
+    });
+
+    $(".deleteCmd").click(function() {
+        var el = $(this).parent();
+        var el2 = $(this).parents('.requested_area').find('hr');
+        var el3 = $(this).parents('.requested').find('img');
+        if (confirm("リクエストを拒否しますか？")){
+            $.post(
+                "/delete",
+                {
+                    id: el.data("id")
+                },
+                function () {
+                    el3.fadeOut(500);
+                    el2.fadeOut(500);
+                    el.fadeOut(500);
+                }
+            );
+        }
+    });
+
+    $(".friendCmd").click(function() {
+        var el = $(this).parent();
+        $.post(
+             "/talk_start",
+             {
+                 id: el.data("id")
+             }
+        );
+    });
+
 </script>

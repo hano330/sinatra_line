@@ -3,13 +3,14 @@ Bundler.require(:default, :production)
 
 require "rack-flash"
 require "tempfile"
+require "sinatra/reloader"
 
 class MineApp < Sinatra::Base
   configure do
     # DB設定ファイルの読み込み
     #db/database.ymlにしないならどうやって読み込むかわからなくなった・・・
-    #ActiveRecord::Base.configurations = YAML.load_file("db/database.yml")
-    ActiveRecord::Base.establish_connection(ENV["postgresql-flexible-24081"] || "postgres://mwvfdbywwseysv:3a1e0ca5ba219e2bf4e8aa6d1290fb01c71f565f335fcbf8701524eb676ae5e3@ec2-184-73-236-170.compute-1.amazonaws.com:5432/d3suersi6s7tmn")
+    ActiveRecord::Base.configurations = YAML.load_file("db/database.yml")
+    ActiveRecord::Base.establish_connection(:development)
   end
 
   set :public_folder, File.dirname(__FILE__) + "/public"
@@ -32,19 +33,23 @@ class MineApp < Sinatra::Base
     alias_method :h, :escape_html
 
     def login?
-      session[:user_name].present?
+      session[:user_id].present?
     end
 
     def talk?
-      session[:to_name].present?
+      session[:toid].present?
     end
 
     def set_current_user
-      @current_user = User.find_by(name: session[:user_name]) if login?
+      @current_user = User.find_by(id: session[:user_id]) if login?
     end
 
     def set_to_user
-      @to_user = User.find_by(name: session[:to_name]) if talk?
+      @to_user = User.find_by(id: session[:toid]) if talk?
+    end
+
+    def room?
+      session[:rid].present?
     end
   end
 
@@ -52,12 +57,49 @@ class MineApp < Sinatra::Base
   #トップページまたはログイン後の画面へ
   get "/" do
     if login?
-      @friends = Friend.where(user_name: @current_user.name)
-      @users = User.order(id: :desc)
-      @reqs = Fadd.where(req_from: @current_user.name)
-      @reqds = Fadd.where(req_to: @current_user.name)
-      @i = 0
-      @x = 0
+      session[:rid] = nil
+      session[:toid] = nil
+      @friends = []
+      @talkrooms = {}
+      @requesteds = []
+
+      @friend_relationships = @current_user.relationships.where(status: "friends")
+      @friend_relationships.each do |friend_relationship|
+        friend_info = User.find(friend_relationship.friend_id)
+        @friends.push(friend_info)
+      end
+
+      #has_manyの関連付けを利用して取得したインスタンスの属性を参照するときには複数系にする
+      #@current_userのtalkroomの情報を手に入れる
+      @current_user_talkrooms = @current_user.talkrooms.distinct
+      @current_user_talkrooms.each do |current_user_talkroom|
+        @talk_users = current_user_talkroom.users.where.not(id: @current_user.id).distinct
+
+        @talk_users.each do |talk_user|
+          #トークルームの情報を入れる配列を初期化
+          @talkroom_info = []
+          #話し相手の名前を配列に挿入
+          @talkroom_info.push(talk_user.name)
+          #新しいメッセージがあるかどうかを調べ、配列に挿入
+          @newpost = Post.where(talkroom_id: current_user_talkroom.id, kidoku: nil).where.not(user_id: @current_user.id).last
+          if @newpost.present? && @newpost.body.present?
+            @talkroom_info.push(@newpost.body)
+            @talkroom_info.push(@newpost.created_at)
+          else
+            @talkroom_info.push(nil)
+            @talkroom_info.push(nil)
+          end
+          # binding.pry
+          @talkrooms[current_user_talkroom.id] = @talkroom_info
+        end
+      end
+
+      @requesteds_relationships = Relationship.where(friend_id: @current_user.id, status: "requesting")
+      @requesteds_relationships.each do |requesteds_relationship|
+        requested_info = User.find(requesteds_relationship.user_id)
+        @requesteds.push(requested_info)
+      end
+
       erb :home
     else
       erb :index
@@ -98,8 +140,9 @@ class MineApp < Sinatra::Base
 
     user = User.find_by(name: params[:name])
     #userが存在し、userのpasswordが一致するか
+
     if user && user.authenticate(params[:password])
-      session[:user_name] = user.name
+      session[:user_id] = user.id
       flash[:notice] = "ログインに成功しました。"
       redirect "/"
     else
@@ -114,61 +157,134 @@ class MineApp < Sinatra::Base
     redirect"/"
   end
 
-  get "/hello/:name" do
-    @to_user = User.find_by(name: params[:name])
-    session[:to_user] = @to_user.name
-    #@posts = Post.where("(user_id = ?) or (to_id = ?)", @current_user.id, session[:to_id])
-
-    #相手による自分へのポストと自分からの相手へのポストを抽出し、日付順（id順になっているのかな）に並べる
-    @myposts = Post.where(name: @current_user.name, sent_to: session[:to_user])
-    @urposts = Post.where(name: session[:to_user], sent_to: @current_user.name)
-    @posts = @myposts + @urposts
-    @posts = @posts.sort
-    @urposts.update_all(kidoku: 1)
-    erb :talk if login?
-  end
-
-  post "/new" do
-    Post.create(name: @current_user.name, body: params[:body], sent_to: session[:to_user])
-    @to_user_name = session[:to_user]
-    redirect "/hello/#{@to_user_name}"
+  post "/friend_search" do
+    user = User.find_by(id: params[:id])
+    @already_friend1 = Relationship.find_by(friend_id: params[:id], user_id: @current_user.id)
+    @already_friend2 = Relationship.find_by(friend_id: @current_user.id, user_id: params[:id])
+   if user && user != @current_user
+     if @already_friend1.nil? && @already_friend2.nil?
+       session[:perhaps_friend] = user
+       flash[:notice] = "友達を見つけました。"
+       redirect "/"
+     else
+       flash[:notice] = "IDが無効、または既に友達か、リクエストが送られています。"
+       redirect "/"
+     end
+   else
+     flash[:notice] = "IDが無効、または既に友達か、リクエストが送られています。"
+     redirect "/"
+   end
   end
 
   post "/delete" do
-    Post.find(params[:id]).destroy
+    @relationship = Relationship.find_by(user_id: params[:id], friend_id: @current_user.id)
+    @relationship.destroy
+    redirect "/"
   end
 
   post "/request" do
-    Fadd.create(req_from: @current_user.name, req_to: params[:name])
     #jQueryによるポストではリダイレクトしないらしい・・・
+    session[:perhaps_friend] = nil
+    @relationship = @current_user.relationships.create(friend_id: params[:id], status: "requesting")
     redirect "/"
   end
 
-  post "/acceptreq" do
-    Friend.create(user_name: @current_user.name, frie_name: params[:name])
-    Friend.create(user_name: params[:name], frie_name: @current_user.name)
-    done_req = Fadd.where(req_from: params[:name], req_to: @current_user.name)
-    #destroyではだめでdestroy_allにしたら消えた。
-    done_req.destroy_all
+  post "/accept" do
+    @relationship = Relationship.find_by(user_id: params[:id], friend_id: @current_user.id)
+    @relationship.update(status: "friends")
+    @relationship = @current_user.relationships.create(friend_id: params[:id], status: "friends")
     redirect "/"
+  end
+
+  post "/newphoto" do
+    type = if params[:file][:type] == "image/png"
+             "png"
+           elsif params[:file][:type] == "image/jpeg"
+             "jpeg"
+           elsif params[:file][:type] == "image/gif"
+             "gif"
+           end
+
+    file_address = "#{@current_user.id}.#{type}"
+
+    #下記のコードはローカルで実行するなら有効（publicフォルダ下のimagesにどんどんアップロードした画像が保存される）
+    save_path = "./public/images/#{file_address}"
+
+    File.open(save_path, "wb") do |f|
+      f.write params[:file][:tempfile].read
+    end
+
+    if @current_user.update(profile_url: file_address)
+      flash[:notice] = "プロフィール写真の変更に成功しました。"
+      redirect "/"
+    else
+      flash[:notice] = "プロフィール写真の変更に失敗しました。"
+      redirect "/"
+    end
+  end
+
+  get "/talk/:id" do
+    session[:toid] = params[:id]
+    redirect "/talk"
+  end
+
+  get "/talk" do
+
+    if !room?
+      @check_if_already = Talkroom.where("(name =  ?) OR (name = ?)", @to_user.name, @current_user.name)
+      if @check_if_already == []
+        @talk_room = @current_user.talkrooms.create(name: @to_user.name)
+        session[:rid] = @talk_room.id
+        @make_it_known = Post.create(talkroom_id: session[:rid], user_id: @to_user.id)
+      else
+        session[:rid] = @check_if_already.ids
+      end
+    end
+
+    @my_posts = @current_user.posts.where(talkroom_id: session[:rid])
+    @your_posts = Post.where(talkroom_id: session[:rid]).where.not(user_id: @current_user.id)
+    @posts = @my_posts + @your_posts
+    @posts = @posts.sort
+    @your_posts.update_all(kidoku: 1)
+    erb :talk if login?
+  end
+
+  get "/talk/room/:name/:rid" do
+    session[:rid] = params[:rid]
+    to_user = User.find_by(name: params[:name])
+    session[:toid] = to_user.id
+    redirect "/talk"
+  end
+
+  post "/new" do
+    @post = @current_user.posts.create(body: params[:body], talkroom_id: session[:rid])
+    redirect "/talk"
   end
 
 end
 
 class User < ActiveRecord::Base
+  has_many :relationships
+  has_many :posts
+  has_many :talkrooms, through: :posts
+
   has_secure_password
 
-  #Validation
   validates :name, presence: true
 end
 
 class Post < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :talkroom
 end
 
-class Friend < ActiveRecord::Base
+class Relationship < ActiveRecord::Base
+  belongs_to :user
 end
 
-class Fadd < ActiveRecord::Base
+class Talkroom < ActiveRecord::Base
+  has_many :posts
+  has_many :users, through: :posts
 end
 
 
