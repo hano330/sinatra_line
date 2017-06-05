@@ -73,3 +73,7 @@ h3 {
     font-family: arial;
     color: #00bfff;
 }
+
+input {
+    font-size: 20px;
+}
