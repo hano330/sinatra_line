@@ -22,7 +22,6 @@ class MineApp < Sinatra::Base
 
   before do
     set_current_user
-    set_to_user
   end
 
   helpers Sinatra::ContentFor
@@ -36,21 +35,10 @@ class MineApp < Sinatra::Base
       session[:user_id].present?
     end
 
-    def talk?
-      session[:toid].present?
-    end
-
     def set_current_user
       @current_user = User.find_by(id: session[:user_id]) if login?
     end
 
-    def set_to_user
-      @to_user = User.find_by(id: session[:toid]) if talk?
-    end
-
-    def room?
-      session[:rid].present?
-    end
   end
 
 
@@ -58,20 +46,32 @@ class MineApp < Sinatra::Base
   get "/" do
     if login?
       session[:rid] = nil
-      session[:toid] = nil
-      @friends = []
+      @friends = {}
       @talkrooms = {}
       @requesteds = []
 
+      #友達
+
+      #現在のユーザーのトークルームIDを集める
+      @current_user_talkrooms = @current_user.talkrooms.ids.uniq
+      #現在のユーザーの友達関係を情報を集める
       @friend_relationships = @current_user.relationships.where(status: "friends")
+      #一人一人の友達関係による友達のIDから友達の名前とお互いがトークしているトークルームIDを見つける
       @friend_relationships.each do |friend_relationship|
         friend_info = User.find(friend_relationship.friend_id)
-        @friends.push(friend_info)
+        @friend_info = []
+        @friend_info.push(friend_info.name)
+        @friend_info.push(friend_info.profile_url)
+        @friend_talkrooms = friend_info.talkrooms.ids.uniq
+        @match_talkroom_id = @friend_talkrooms & @current_user_talkrooms
+        @friends[@match_talkroom_id[0]] = @friend_info
       end
 
+      #トーク
       #has_manyの関連付けを利用して取得したインスタンスの属性を参照するときには複数系にする
       #@current_userのtalkroomの情報を手に入れる
       @current_user_talkrooms = @current_user.talkrooms.distinct
+      #ちなみに↑をidsとuniqにするとOUTだった。なぜ？
       @current_user_talkrooms.each do |current_user_talkroom|
         @talk_users = current_user_talkroom.users.where.not(id: @current_user.id).distinct
 
@@ -82,18 +82,20 @@ class MineApp < Sinatra::Base
           @talkroom_info.push(talk_user.name)
           #新しいメッセージがあるかどうかを調べ、配列に挿入
           @newpost = Post.where(talkroom_id: current_user_talkroom.id, kidoku: nil).where.not(user_id: @current_user.id).last
-          if @newpost.present? && @newpost.body.present?
+          if @newpost.present?
             @talkroom_info.push(@newpost.body)
             @talkroom_info.push(@newpost.created_at)
+            @talkroom_info.push("new")
           else
-            @talkroom_info.push(nil)
-            @talkroom_info.push(nil)
+            @latestpost = Post.where(talkroom_id: current_user_talkroom.id).last
+            @talkroom_info.push(@latestpost.body)
+            @talkroom_info.push(@latestpost.created_at)
           end
-          # binding.pry
           @talkrooms[current_user_talkroom.id] = @talkroom_info
         end
       end
 
+      #リクエスト
       @requesteds_relationships = Relationship.where(friend_id: @current_user.id, status: "requesting")
       @requesteds_relationships.each do |requesteds_relationship|
         requested_info = User.find(requesteds_relationship.user_id)
@@ -149,12 +151,6 @@ class MineApp < Sinatra::Base
       flash[:notice] = "ログインしてください。"
       erb :login
     end
-  end
-
-  post "/logout" do
-    session.clear
-    flash[:notice] = "ログアウトしました。"
-    redirect"/"
   end
 
   post "/friend_search" do
@@ -223,24 +219,9 @@ class MineApp < Sinatra::Base
     end
   end
 
-  get "/talk/:id" do
-    session[:toid] = params[:id]
-    redirect "/talk"
-  end
-
-  get "/talk" do
-
-    if !room?
-      @check_if_already = Talkroom.where("(name =  ?) OR (name = ?)", @to_user.name, @current_user.name)
-      if @check_if_already == nil
-        @talk_room = @current_user.talkrooms.create(name: @to_user.name)
-        session[:rid] = @talk_room.id
-        @make_it_known = Post.create(talkroom_id: session[:rid], user_id: @to_user.id)
-      else
-        session[:rid] = @check_if_already.ids[0]
-      end
-    end
-
+  get "/talk/room/:name/:rid" do
+    session[:rid] = params[:rid]
+    @to_user = User.find_by(name: params[:name])
     @my_posts = @current_user.posts.where(talkroom_id: session[:rid])
     @your_posts = Post.where(talkroom_id: session[:rid]).where.not(user_id: @current_user.id)
     @posts = @my_posts + @your_posts
@@ -249,16 +230,17 @@ class MineApp < Sinatra::Base
     erb :talk if login?
   end
 
-  get "/talk/room/:name/:rid" do
-    session[:rid] = params[:rid]
-    to_user = User.find_by(name: params[:name])
-    session[:toid] = to_user.id
-    redirect "/talk"
+  post "/new" do
+    if params[:body].present?
+      @post = @current_user.posts.create(body: params[:body], talkroom_id: session[:rid])
+    end
+    redirect back
   end
 
-  post "/new" do
-    @post = @current_user.posts.create(body: params[:body], talkroom_id: session[:rid])
-    redirect "/talk"
+  post "/logout" do
+    session.clear
+    flash[:notice] = "ログアウトしました。"
+    redirect"/"
   end
 
 end
