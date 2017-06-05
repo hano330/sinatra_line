@@ -60,12 +60,14 @@ function ChangeTab(tabname) {
       </div>
     <% end %>
     <% if @friends.present? %>
-      <% @friends.each do |friend| %>
+      <% @friends.each do |friend_talkroom_id, friend_info| %>
           <div class="friend">
-            <img width="70px" height="70px" src="./images/<%= friend.profile_url %>">
-            <p data-id="<%= friend.id %>">
-              <a href="/talk/<%= friend.id %>" style="cursor:pointer;text-decoration:none;"><%= friend.name %></a>
-            </p>
+            <% if friend_info[1].present? %>
+              <img width="70px" height="70px" src="./images/<%= friend_info.profile_url %>">
+            <% else %>
+              <img width="70px" height="70px" src="./images/sth">
+            <% end %>
+            <a href="/talk/room/<%= friend_info[0] %>/<%= friend_talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= friend_info[0] %></a>
           </div>
           <hr>
       <% end %>
@@ -74,16 +76,14 @@ function ChangeTab(tabname) {
 
   <div id="tab2" class="tab">
     <% if @talkrooms.present? %>
-      <br>
       <% @talkrooms.each do |talkroom_id, talkroom_info| %>
         <div class="talkroom">
-          <% if talkroom_info[1].present? %>
+          <p id="time"><%= talkroom_info[2].in_time_zone("Tokyo").strftime("%m/%d %H:%M") %></p>
+          <% if talkroom_info[3].present? %>
               <span id ="new" style="color:red;font-size:15px;font-family:arial">NEW</span>
           <% end %>
           <a href="/talk/room/<%= talkroom_info[0] %>/<%= talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= talkroom_info[0] %></a>
-          <% if talkroom_info[2].present? %>
-          <small style="color:gray"><%= talkroom_info[1].truncate(23) %><%= talkroom_info[2].in_time_zone("Tokyo").strftime("%m/%d %H:%M") %></small>
-          <% end %>
+          <p id="text"><%= talkroom_info[1].truncate(25) %></p>
         </div>
         <hr>
       <% end %>

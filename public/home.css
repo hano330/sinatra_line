@@ -135,7 +135,7 @@ img {
     margin-left: 10px;
 }
 
-#tab1 img, p {
+#tab1 img, a {
     vertical-align: middle;
 }
 
@@ -159,7 +159,7 @@ img {
     vertical-align: middle;
 }
 
-/* tab2（「トーク」のタブ）のCSS */
+/* tab2（「トーク」）のCSS */
 
 #tab2 a {
     display: inline;
@@ -176,11 +176,26 @@ img {
     border: solid 1px;
 }
 
+#tab2 p {
+    display: inline;
+    color: gray;
+}
+
+#tab2 #time {
+    display: block;
+    text-align: right;
+    font-size: 15px;
+}
+
+#tab2 #text {
+    font-size: 15px;
+}
+
 #tab2 img {
     vertical-align: middle;
 }
 
-/* tab3（「リクエスト中」のタブ）のCSS */
+/* tab3（「リクエスト中」）のCSS */
 
 #tab3 p {
     display: inline;
@@ -195,7 +210,7 @@ img {
     vertical-align: middle;
 }
 
-/* tab4(「あなた」のタブ）のCSS */
+/* tab4(「あなた」）のCSS */
 
 /* 全体的な処理 */
 #tab4 {
