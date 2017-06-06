@@ -255,22 +255,66 @@ class MineApp < Sinatra::Base
     end
   end
 
-  get "/talk/room/:name/:rid" do
-    session[:rid] = params[:rid]
-    @to_user = User.find_by(name: params[:name])
-    @my_posts = @current_user.posts.where(talkroom_id: session[:rid])
-    @your_posts = Post.where(talkroom_id: session[:rid]).where.not(user_id: @current_user.id)
-    @posts = @my_posts + @your_posts
+  # get "/talk/room/:name/:rid" do
+  #   session[:rid] = params[:rid]
+  #   @to_user = User.find_by(name: params[:name])
+  #   @my_posts = @current_user.posts.where(talkroom_id: session[:rid])
+  #   @your_posts = Post.where(talkroom_id: session[:rid]).where.not(user_id: @current_user.id)
+  #   @posts = @my_posts + @your_posts
+  #   @posts = @posts.sort
+  #   @your_posts.update_all(kidoku: 1)
+  #   erb :talk if login?
+  # end
+
+  post "/new/:rid" do
+    if params[:body].present?
+      @post = @current_user.posts.create(body: params[:body], talkroom_id: params[:rid])
+    end
+    redirect "/talk/room/#{params[:rid]}"
+  end
+
+  post "/create_talkroom" do
+    @room_users = params[:room_users]
+    @new_talk_room = @current_user.talkrooms.create(name: @current_user.name)
+    @automatic_post = Post.where(user_id: @current_user.id, talkroom_id: @new_talk_room.id)
+    @automatic_post.update(kidoku: 1)
+    @talkroom_id = @new_talk_room.id
+    @to_users = []
+    @room_users.each do |room_user|
+      @room_user_info = User.find(room_user)
+      @to_users.push(@room_user_info)
+      @first_post = @room_user_info.posts.create(talkroom_id: @talkroom_id, body: nil, kidoku: 1)
+    end
+    @my_posts = @current_user.posts.where(talkroom_id: @talkroom_id).where.not(body: nil)
+    @others_posts = Post.where(talkroom_id: @talkroom_id).where.not(user_id: @current_user.id).where.not(body: nil)
+    @posts = @my_posts + @others_posts
     @posts = @posts.sort
     @your_posts.update_all(kidoku: 1)
     erb :talk if login?
   end
 
-  post "/new" do
-    if params[:body].present?
-      @post = @current_user.posts.create(body: params[:body], talkroom_id: session[:rid])
-    end
-    redirect back
+  get "/talk/room/new/:id" do
+    @to_user = User.find(params[:id])
+    @talkroom = @current_user.talkrooms.create(name: @current_user.name)
+    @automatic_post = Post.where(user_id: @current_user.id, talkroom_id: @talkroom.id)
+    @automatic_post.update(kidoku: 1)
+    @first_post = @to_user.posts.create(talkroom_id: @talkroom.id, body: nil, kidoku: 1)
+    @talkroom_id = @talkroom.id
+    erb :talk if login?
+  end
+
+  get "/talk/room/:rid" do
+    @talkroom_id = params[:rid]
+    @talkroom = Talkroom.find(@talkroom_id)
+    @to_users = @talkroom.users.where.not(id: @current_user.id).distinct
+
+    #ポスト検索
+    @my_posts = @current_user.posts.where(talkroom_id: @talkroom_id).where.not(body: nil)
+    @others_posts = Post.where(talkroom_id: @talkroom_id).where.not(user_id: @current_user.id).where.not(body: nil)
+    @others_posts.update_all(kidoku: 1)
+    @posts = @my_posts + @others_posts
+    @posts = @posts.sort
+    erb :talk if login?
   end
 
   post "/logout" do
