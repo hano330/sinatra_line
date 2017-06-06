@@ -289,7 +289,6 @@ class MineApp < Sinatra::Base
     @others_posts = Post.where(talkroom_id: @talkroom_id).where.not(user_id: @current_user.id).where.not(body: nil)
     @posts = @my_posts + @others_posts
     @posts = @posts.sort
-    @your_posts.update_all(kidoku: 1)
     erb :talk if login?
   end
 
