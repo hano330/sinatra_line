@@ -52,47 +52,83 @@ class MineApp < Sinatra::Base
 
       #友達
 
-      #現在のユーザーのトークルームIDを集める
+      #@current_userのtalkroomの情報を手に入れる
+      #下の酷似している@current_user_talkroomsを見ればわかるが、関連付けを利用してデータを引っ張ってきた場合、
+      #idsとidだけを引っ張ってきたらuniqが使えるが、そうでなければdisticntが正解。
+      #後で記事で書く。ちなみに、uniqを使わなければ[67,67,67]となるが、それは中間テーブルであるposts
+      #で3回ポストしているから。
+
+
       @current_user_talkrooms = @current_user.talkrooms.ids.uniq
       #現在のユーザーの友達関係を情報を集める
       @friend_relationships = @current_user.relationships.where(status: "friends")
-      #一人一人の友達関係による友達のIDから友達の名前とお互いがトークしているトークルームIDを見つける
+      #一人一人の友達関係による友達のIDから友達の一般情報とお互いがトークしているトークルームIDを見つける
       @friend_relationships.each do |friend_relationship|
         friend_info = User.find(friend_relationship.friend_id)
         @friend_info = []
         @friend_info.push(friend_info.name)
         @friend_info.push(friend_info.profile_url)
+        @friend_info.push(friend_info.id)
         @friend_talkrooms = friend_info.talkrooms.ids.uniq
-        @match_talkroom_id = @friend_talkrooms & @current_user_talkrooms
-        @friends[@match_talkroom_id[0]] = @friend_info
+        if @friend_talkrooms.present?
+          #友達がトークルームを持っていれば、自分のトークルームとマッチングする
+          @match_talkroom_ids = @friend_talkrooms & @current_user_talkrooms
+          if @match_talkroom_ids.present?
+            i = 0
+            @match_talkroom_ids.each do |match_talkroom_id|
+              #マッチするトークルームがあれば、第三者がいないかチェックする
+              max = @match_talkroom_ids.size
+              @other_member_check = Post.where.not(user_id: @current_user.id ).where.not(user_id: friend_info.id).where(talkroom_id: match_talkroom_id)
+              if @other_member_check.present? && i < max - 1
+                #他のメンバーがいるならこのトークルームは無視
+                i += 1
+                next
+              elsif @other_member_check == []
+                #居ないならそれが1対1のトークルーム
+                @friends[match_talkroom_id] = @friend_info
+                break
+              else
+                #全てのトークルームに第三者がいれば、1対1のトークルームはない
+                @friends["no_room_#{friend_info.id}"] = @friend_info
+              end
+            end
+          else
+            #マッチするトークルームがない
+            @friends["no_room_#{friend_info.id}"] = @friend_info
+          end
+        else
+          #友達がトークルームを一つも持っていないno_room + 友達のIDをキーにする
+          @friends["no_room_#{friend_info.id}"] = @friend_info
+        end
       end
-
       #トーク
-      #has_manyの関連付けを利用して取得したインスタンスの属性を参照するときには複数系にする
+
       #@current_userのtalkroomの情報を手に入れる
       @current_user_talkrooms = @current_user.talkrooms.distinct
-      #ちなみに↑をidsとuniqにするとOUTだった。なぜ？
+
       @current_user_talkrooms.each do |current_user_talkroom|
         @talk_users = current_user_talkroom.users.where.not(id: @current_user.id).distinct
-
+        #トークルーム毎にトーク相手を入れる配列を初期化
+        @talk_with = []
         @talk_users.each do |talk_user|
-          #トークルームの情報を入れる配列を初期化
-          @talkroom_info = []
           #話し相手の名前を配列に挿入
-          @talkroom_info.push(talk_user.name)
-          #新しいメッセージがあるかどうかを調べ、配列に挿入
-          @newpost = Post.where(talkroom_id: current_user_talkroom.id, kidoku: nil).where.not(user_id: @current_user.id).last
-          if @newpost.present?
-            @talkroom_info.push(@newpost.body)
-            @talkroom_info.push(@newpost.created_at)
-            @talkroom_info.push("new")
-          else
-            @latestpost = Post.where(talkroom_id: current_user_talkroom.id).last
-            @talkroom_info.push(@latestpost.body)
-            @talkroom_info.push(@latestpost.created_at)
-          end
-          @talkrooms[current_user_talkroom.id] = @talkroom_info
+          @talk_with.push(talk_user.name)
         end
+        @talkroom_info = []
+        #新しいメッセージまたは最新のメッセージを取得
+        @newpost = Post.where(talkroom_id: current_user_talkroom.id, kidoku: nil).where.not(user_id: @current_user.id).last
+        if @newpost.present?
+          @talkroom_info.push(@newpost.body)
+          @talkroom_info.push(@newpost.created_at)
+          @talkroom_info.push("new")
+        else
+          @latestpost = Post.where(talkroom_id: current_user_talkroom.id).last
+          @talkroom_info.push(@latestpost.body)
+          @talkroom_info.push(@latestpost.created_at)
+        end
+        #talkroom_info配列の最初はトーク相手の配列を入れる
+        @talkroom_info.unshift(@talk_with)
+        @talkrooms[current_user_talkroom.id] = @talkroom_info
       end
 
       #リクエスト
@@ -219,22 +255,65 @@ class MineApp < Sinatra::Base
     end
   end
 
-  get "/talk/room/:name/:rid" do
-    session[:rid] = params[:rid]
-    @to_user = User.find_by(name: params[:name])
-    @my_posts = @current_user.posts.where(talkroom_id: session[:rid])
-    @your_posts = Post.where(talkroom_id: session[:rid]).where.not(user_id: @current_user.id)
-    @posts = @my_posts + @your_posts
+  # get "/talk/room/:name/:rid" do
+  #   session[:rid] = params[:rid]
+  #   @to_user = User.find_by(name: params[:name])
+  #   @my_posts = @current_user.posts.where(talkroom_id: session[:rid])
+  #   @your_posts = Post.where(talkroom_id: session[:rid]).where.not(user_id: @current_user.id)
+  #   @posts = @my_posts + @your_posts
+  #   @posts = @posts.sort
+  #   @your_posts.update_all(kidoku: 1)
+  #   erb :talk if login?
+  # end
+
+  post "/new/:rid" do
+    if params[:body].present?
+      @post = @current_user.posts.create(body: params[:body], talkroom_id: params[:rid])
+    end
+    redirect "/talk/room/#{params[:rid]}"
+  end
+
+  post "/create_talkroom" do
+    @room_users = params[:room_users]
+    @new_talk_room = @current_user.talkrooms.create(name: @current_user.name)
+    @automatic_post = Post.where(user_id: @current_user.id, talkroom_id: @new_talk_room.id)
+    @automatic_post.update(kidoku: 1)
+    @talkroom_id = @new_talk_room.id
+    @to_users = []
+    @room_users.each do |room_user|
+      @room_user_info = User.find(room_user)
+      @to_users.push(@room_user_info)
+      @first_post = @room_user_info.posts.create(talkroom_id: @talkroom_id, body: nil, kidoku: 1)
+    end
+    @my_posts = @current_user.posts.where(talkroom_id: @talkroom_id).where.not(body: nil)
+    @others_posts = Post.where(talkroom_id: @talkroom_id).where.not(user_id: @current_user.id).where.not(body: nil)
+    @posts = @my_posts + @others_posts
     @posts = @posts.sort
-    @your_posts.update_all(kidoku: 1)
     erb :talk if login?
   end
 
-  post "/new" do
-    if params[:body].present?
-      @post = @current_user.posts.create(body: params[:body], talkroom_id: session[:rid])
-    end
-    redirect back
+  get "/talk/room/new/:id" do
+    @to_user = User.find(params[:id])
+    @talkroom = @current_user.talkrooms.create(name: @current_user.name)
+    @automatic_post = Post.where(user_id: @current_user.id, talkroom_id: @talkroom.id)
+    @automatic_post.update(kidoku: 1)
+    @first_post = @to_user.posts.create(talkroom_id: @talkroom.id, body: nil, kidoku: 1)
+    @talkroom_id = @talkroom.id
+    erb :talk if login?
+  end
+
+  get "/talk/room/:rid" do
+    @talkroom_id = params[:rid]
+    @talkroom = Talkroom.find(@talkroom_id)
+    @to_users = @talkroom.users.where.not(id: @current_user.id).distinct
+
+    #ポスト検索
+    @my_posts = @current_user.posts.where(talkroom_id: @talkroom_id).where.not(body: nil)
+    @others_posts = Post.where(talkroom_id: @talkroom_id).where.not(user_id: @current_user.id).where.not(body: nil)
+    @others_posts.update_all(kidoku: 1)
+    @posts = @my_posts + @others_posts
+    @posts = @posts.sort
+    erb :talk if login?
   end
 
   post "/logout" do

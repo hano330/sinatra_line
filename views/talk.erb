@@ -1,44 +1,59 @@
 <% content_for :title do %>
-    トーク|<%= @to_user.name %>
+ <% if @to_uers.present? %>
+   <% @to_users.each do |to_user| %>
+    <%= to_user.name %>
+   <% end %>
+ <% elsif @to_user.present? %>
+   <% @to_user.name %>
+ <% end %>
 <% end %>
+
 
 <% content_for :css do %>
-    /talk.css
+  /talk.css
 <% end %>
 
-<h1><%= @to_user.name %></h1>
+<% if @to_users.present? %>
+  <% @to_users.each do |to_user| %>
+    <span style="font-size:30px;font-weight:bold;font-family:arial;color:#00bfff;text-align:center;"><%= to_user.name %> </span>
+  <% end %>
+<% elsif @to_user.present? %>
+  <span style="font-size:30px;font-weight:bold;font-family:arial;color:#00bfff;text-align:center;"><%= @to_user.name %></span>
+<% end %>
+
 <div id="wrapper" style="overflow: auto;">
   <% if @posts.present? %>
-    <% @posts.each do |post| %>
-          <% if post.user_id == @current_user.id && post.body != nil %>
-            <div class="me">
-              <div class="my_content">
-                <big><%= h post.body %></big><br>
+      <% @posts.each do |post| %>
+          <% if post.user_id == @current_user.id %>
+              <div class="me">
+                <div class="my_content">
+                  <big><%= h post.body %></big><br>
+                </div>
+                <div class="my_time">
+                  <small>
+                    <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h @current_user.name %>
+                    <% if post.kidoku == 1 %>
+                        ：既読
+                    <% end %>
+                  </small>
+                </div>
               </div>
-              <div class="my_time">
+          <% else %>
+              <div class="you">
+                <big><%= h post.body %></big><br>
                 <small>
-                  <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h @current_user.name %>
-                  <% if post.kidoku == 1 %>
-                      ：既読
-                  <% end %>
+                  <% user = @to_users.select{|i| i[:id] == post.user_id} %>
+                  <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h user[0][:name] %>
                 </small>
               </div>
-            </div>
-          <% elsif post.user_id == @to_user.id && post.body != nil %>
-            <div class="you">
-              <big><%= h post.body %></big><br>
-              <small>
-                <%= h post.created_at.in_time_zone("Tokyo").strftime("%H:%M") %> by <%= h @to_user.name %>
-              </small>
-            </div>
           <% end %>
-    <% end %>
+      <% end %>
   <% else %>
-     <h2><%= @to_user.name %>さんに初メッセージを送ろう！</h2>
+      <h2>初メッセージを送ろう！</h2>
   <% end %>
 </div>
 
-<form method="post" action="/new">
+<form method="post" action="/new/<%= @talkroom_id %>">
   <p><textarea name="body" rows="5" cols="40" style="font-size:15px" placeholder="ここに入力してください。"></textarea></p>
   <input type="submit" class="button" style="font-size:20px;font-family:arial;" value="送信">
   <a href="/"><input class="button" type="button" style="font-size:20px;font-family:arial;" value="戻る"></a>

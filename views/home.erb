@@ -46,6 +46,7 @@ function ChangeTab(tabname) {
       <input name="id" type="text" style="font-size:20px" placeholder="友達のIDを入力してね">
       <input type="submit" id="search" style="font-size:20px;" value="検索">
     </form>
+    <button  id="create_talkroom">トークルーム作成</button>
     <hr>
     <% if session[:perhaps_friend].present? %>
       <div class="searched_area">
@@ -61,17 +62,45 @@ function ChangeTab(tabname) {
     <% end %>
     <% if @friends.present? %>
       <% @friends.each do |friend_talkroom_id, friend_info| %>
-          <div class="friend">
-            <% if friend_info[1].present? %>
-              <img width="70px" height="70px" src="./images/<%= friend_info.profile_url %>">
-            <% else %>
-              <img width="70px" height="70px" src="./images/sth">
-            <% end %>
-            <a href="/talk/room/<%= friend_info[0] %>/<%= friend_talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= friend_info[0] %></a>
-          </div>
-          <hr>
+        <div class="friend">
+          <% if friend_info[1].present? %>
+            <img width="70px" height="70px" src="./images/<%= friend_info[1] %>">
+          <% else %>
+            <img width="70px" height="70px" src="./images/sth">
+          <% end %>
+          <% if friend_talkroom_id.kind_of?(String) %>
+            <a href="/talk/room/new/<%= friend_info[2] %>" style="cursor:pointer;text-decoration:none"><%= friend_info[0] %></a>
+          <% else %>
+            <a href="/talk/room/<%= friend_talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= friend_info[0] %></a>
+          <% end %>
+        </div>
+        <hr>
       <% end %>
     <% end %>
+  </div>
+
+  <div class="modal-wrapper" id="modal">
+    <div id="tab1" class="modal">
+      <span id="delete-modal" style="cursor:pointer">[X]</span>
+      <form method="post" action="/create_talkroom">
+        <p style="font-weight: bold;font-family:arial;color:#00bfff;font-size:20px">一緒にトークする友達を選ぼう！</p>
+        <% if @friends.present? %>
+          <% @friends.each do |friend_talkroom_id, friend_info| %>
+            <div class="friend">
+              <% if friend_info[1].present? %>
+                <img width="70px" height="70px" src="./images/<%= friend_info[1] %>">
+              <% else %>
+                <img width="70px" height="70px" src="./images/sth">
+              <% end %>
+              <a style="cursor:pointer;text-decoration:none"><%= friend_info[0] %></a>
+              <input type="checkbox" name="room_users[]" value="<%= friend_info[2] %>" style="cursor:pointer">
+            </div>
+            <hr>
+          <% end %>
+        <% end %>
+        <input type="submit" value="トークルーム作成">
+      </form>
+    </div>
   </div>
 
   <div id="tab2" class="tab">
@@ -82,8 +111,25 @@ function ChangeTab(tabname) {
           <% if talkroom_info[3].present? %>
               <span id ="new" style="color:red;font-size:15px;font-family:arial">NEW</span>
           <% end %>
-          <a href="/talk/room/<%= talkroom_info[0] %>/<%= talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= talkroom_info[0] %></a>
-          <p id="text"><%= talkroom_info[1].truncate(25) %></p>
+          <% if talkroom_info[0].size == 1 %>
+            <a href="/talk/room/<%= talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= talkroom_info[0][0] %></a>
+            <% if talkroom_info[1] != nil %>
+              <p id="text"><%= talkroom_info[1].truncate(25) %></p>
+            <% end %>
+          <% else %>
+            <% i = 0 %>
+            <% talkroom_info[0].each do |name| %>
+              <% if i < 4 %>
+                <a href="/talk/room/<%= talkroom_id %>" style="cursor:pointer;text-decoration:none"><%= name %></a>
+                <% i += 1 %>
+              <% else %>
+                <% break %>
+              <% end %>
+            <% end %>
+              <% if talkroom_info[1] != nil %>
+                <p id="text"><%= talkroom_info[1].truncate(25 - 6 * talkroom_info[0].size) %></p>
+              <% end %>
+          <% end %>
         </div>
         <hr>
       <% end %>
@@ -203,6 +249,20 @@ ChangeTab('tab1');
                  id: el.data("id")
              }
         );
+    });
+
+    $(function() {
+        // 「#login-show」要素に対するclickイベントを作成してください
+        $("#create_talkroom").click(function(){
+            $("#modal").fadeIn();
+        });
+    });
+
+    $(function() {
+        // 「#login-show」要素に対するclickイベントを作成してください
+        $("#delete-modal").click(function(){
+            $("#modal").fadeOut();
+        });
     });
 
 </script>
