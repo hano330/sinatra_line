@@ -102,31 +102,33 @@ class MineApp < Sinatra::Base
         end
       end
       #トーク
-      #has_manyの関連付けを利用して取得したインスタンスの属性を参照するときには複数系にする
+
       #@current_userのtalkroomの情報を手に入れる
       @current_user_talkrooms = @current_user.talkrooms.distinct
-      #ちなみに↑をidsとuniqにするとOUTだった。なぜ？
+
       @current_user_talkrooms.each do |current_user_talkroom|
         @talk_users = current_user_talkroom.users.where.not(id: @current_user.id).distinct
-
+        #トークルーム毎にトーク相手を入れる配列を初期化
+        @talk_with = []
         @talk_users.each do |talk_user|
-          #トークルームの情報を入れる配列を初期化
-          @talkroom_info = []
           #話し相手の名前を配列に挿入
-          @talkroom_info.push(talk_user.name)
-          #新しいメッセージがあるかどうかを調べ、配列に挿入
-          @newpost = Post.where(talkroom_id: current_user_talkroom.id, kidoku: nil).where.not(user_id: @current_user.id).last
-          if @newpost.present?
-            @talkroom_info.push(@newpost.body)
-            @talkroom_info.push(@newpost.created_at)
-            @talkroom_info.push("new")
-          else
-            @latestpost = Post.where(talkroom_id: current_user_talkroom.id).last
-            @talkroom_info.push(@latestpost.body)
-            @talkroom_info.push(@latestpost.created_at)
-          end
-          @talkrooms[current_user_talkroom.id] = @talkroom_info
+          @talk_with.push(talk_user.name)
         end
+        @talkroom_info = []
+        #新しいメッセージまたは最新のメッセージを取得
+        @newpost = Post.where(talkroom_id: current_user_talkroom.id, kidoku: nil).where.not(user_id: @current_user.id).last
+        if @newpost.present?
+          @talkroom_info.push(@newpost.body)
+          @talkroom_info.push(@newpost.created_at)
+          @talkroom_info.push("new")
+        else
+          @latestpost = Post.where(talkroom_id: current_user_talkroom.id).last
+          @talkroom_info.push(@latestpost.body)
+          @talkroom_info.push(@latestpost.created_at)
+        end
+        #talkroom_info配列の最初はトーク相手の配列を入れる
+        @talkroom_info.unshift(@talk_with)
+        @talkrooms[current_user_talkroom.id] = @talkroom_info
       end
 
       #リクエスト
