@@ -52,21 +52,55 @@ class MineApp < Sinatra::Base
 
       #友達
 
-      #現在のユーザーのトークルームIDを集める
+      #@current_userのtalkroomの情報を手に入れる
+      #下の酷似している@current_user_talkroomsを見ればわかるが、関連付けを利用してデータを引っ張ってきた場合、
+      #idsとidだけを引っ張ってきたらuniqが使えるが、そうでなければdisticntが正解。
+      #後で記事で書く。ちなみに、uniqを使わなければ[67,67,67]となるが、それは中間テーブルであるposts
+      #で3回ポストしているから。
+
+
       @current_user_talkrooms = @current_user.talkrooms.ids.uniq
       #現在のユーザーの友達関係を情報を集める
       @friend_relationships = @current_user.relationships.where(status: "friends")
-      #一人一人の友達関係による友達のIDから友達の名前とお互いがトークしているトークルームIDを見つける
+      #一人一人の友達関係による友達のIDから友達の一般情報とお互いがトークしているトークルームIDを見つける
       @friend_relationships.each do |friend_relationship|
         friend_info = User.find(friend_relationship.friend_id)
         @friend_info = []
         @friend_info.push(friend_info.name)
         @friend_info.push(friend_info.profile_url)
+        @friend_info.push(friend_info.id)
         @friend_talkrooms = friend_info.talkrooms.ids.uniq
-        @match_talkroom_id = @friend_talkrooms & @current_user_talkrooms
-        @friends[@match_talkroom_id[0]] = @friend_info
+        if @friend_talkrooms.present?
+          #友達がトークルームを持っていれば、自分のトークルームとマッチングする
+          @match_talkroom_ids = @friend_talkrooms & @current_user_talkrooms
+          if @match_talkroom_ids.present?
+            i = 0
+            @match_talkroom_ids.each do |match_talkroom_id|
+              #マッチするトークルームがあれば、第三者がいないかチェックする
+              max = @match_talkroom_ids.size
+              @other_member_check = Post.where.not(user_id: @current_user.id ).where.not(user_id: friend_info.id).where(talkroom_id: match_talkroom_id)
+              if @other_member_check.present? && i < max - 1
+                #他のメンバーがいるならこのトークルームは無視
+                i += 1
+                next
+              elsif @other_member_check == []
+                #居ないならそれが1対1のトークルーム
+                @friends[match_talkroom_id] = @friend_info
+                break
+              else
+                #全てのトークルームに第三者がいれば、1対1のトークルームはない
+                @friends["no_room_#{friend_info.id}"] = @friend_info
+              end
+            end
+          else
+            #マッチするトークルームがない
+            @friends["no_room_#{friend_info.id}"] = @friend_info
+          end
+        else
+          #友達がトークルームを一つも持っていないno_room + 友達のIDをキーにする
+          @friends["no_room_#{friend_info.id}"] = @friend_info
+        end
       end
-
       #トーク
       #has_manyの関連付けを利用して取得したインスタンスの属性を参照するときには複数系にする
       #@current_userのtalkroomの情報を手に入れる
