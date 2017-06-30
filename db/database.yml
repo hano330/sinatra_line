@@ -3,5 +3,5 @@ development:
   database: practice
   host: localhost
   username: root
-  password: 41933419
+  password:
   encoding: utf8
