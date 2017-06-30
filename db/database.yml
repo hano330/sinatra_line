@@ -1,6 +1,6 @@
 development:
   adapter: mysql2
-  database: practice
+  database: mine
   host: localhost
   username: root
   password:
